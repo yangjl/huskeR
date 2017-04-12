@@ -13,7 +13,9 @@
 [RoadMap](https://github.com/dmlc/xgboost/issues/873)
 -->
 
-This is an R packages to generate genomic and bioinformatic pipelines and submit jobs on HPC system running slurm.
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+
+This is an R packages to generate genomic and bioinformatic pipelines and submit jobs to a HPC running slurm system.
 
 ## Install
 
@@ -38,7 +40,7 @@ ls(getNamespace("huskeR"), all.names=TRUE)
 
 ## License
 
-It is a free and open source software, licensed under [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0).
+It is a free and open source software, licensed under [GPLv3](LICENSE).
 This is an ongoing research project from **Yang Lab**. It was intended for internal lab usage. It has not been extensively tested. Use at your own risk.
 
 

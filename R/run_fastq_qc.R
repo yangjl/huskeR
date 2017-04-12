@@ -46,7 +46,7 @@ run_fastq_qc <- function(df, method= "seqtk", q=20, email=NULL, runinfo = c(FALS
   }
 
   if(method == "FastQC"){
-    shcode <- c("module load fastqc/0.11.5", "sh slurm-script/run_fqqc_$SLURM_ARRAY_TASK_ID.sh")
+    shcode <- c("module load fastqc", "sh slurm-script/run_fqqc_$SLURM_ARRAY_TASK_ID.sh")
   }else if(method == "seqtk"){
     shcode <- "sh slurm-script/run_fqqc_$SLURM_ARRAY_TASK_ID.sh"
   }

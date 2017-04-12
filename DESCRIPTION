@@ -3,7 +3,7 @@ Type: Package
 Title: Genomic and Genetic analysis Pipeline on HPC
 Version: 0.1.0.9002
 Author: Jinliang Yang
-Maintainer: person("Jinliang", "Yang", email = "yangjl0930@gmail.com", role = c("aut", "cre"))
+Maintainer: Jinliang Yang
 Description: Collection of genomic and genetic analysis pipelines running on HPC.
 License: GPL (>= 2)
 Encoding: UTF-8
