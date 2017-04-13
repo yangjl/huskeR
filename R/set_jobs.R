@@ -65,7 +65,9 @@ set_array_job <- function(
 
     #### the sbatch code
     runinfo <- get_runinfo(runinfo)
-    runcode <- paste0("sbatch -p ", runinfo[2], " --mem ", runinfo[4], " --ntasks=", runinfo[3], " ", shid)
+    runcode <- paste0("sbatch -p ", runinfo[2], " --ntasks=", runinfo[3],
+                      " --mem ", runinfo[4], " --time=", runinfo[5],
+                      " ", shid)
 
     #### attach some sh scripts
     cat(shcode, file=shid, sep="\n", append=TRUE)
@@ -161,7 +163,8 @@ set_slurm_job <- function(slurmsh="largedata/GenSel/CL_test.sh",
 
   #### the sbatch code
   #runinfo <- get_runinfo(runinfo)
-  runcode <- paste0("sbatch -p ", runinfo[2], " --ntasks=", runinfo[3], " --mem=", runinfo[4],
+  runcode <- paste0("sbatch -p ", runinfo[2], " --ntasks=", runinfo[3],
+                    " --mem=", runinfo[4],
                     " --time=", runinfo[5], " ", slurmsh)
 
   if(runinfo[1]){
