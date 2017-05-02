@@ -21,17 +21,23 @@
 #' Additional columns: group (group id), sample (sample id), PL (platform, i.e. illumina),
 #' LB (library id), PU (unit, i.e. unit1). These strings (or info) will pass to BWA mem through -R.
 #'
+#' @param runbwa Set up BWA-mem, default=TRUE.
+#' @param markDup Mark Duplicates, default=TRUE.
+#' @param addRG Add or replace Read Groups using Picard AddOrReplaceReadGroups, default=FALSE.
+#' @param rungatk Setup GATK, default=FALSE.
+#'
 #' @param ref.fa The full path of genome with bwa indexed reference fasta file.
 #' @param gatkpwd The absolute path of GenomeAnalysisTK.jar.
 #' @param picardpwd The absolute path of picard.jar.
 #' @param minscore Minimum score to output, default=5, [bwa 30]. It will pass to bwa mem -T INT.
 #'
-#' @param markDup Mark Duplicates, default=TRUE.
-#' @param addRG Add or replace Read Groups using Picard AddOrReplaceReadGroups, default=FALSE.
 #' @param realignInDels Realign Indels, default=FALSE. IF TRUE, a golden indel.vcf file should be provided.
 #' @param indels.vcf The full path of indels.vcf.
 #' @param recalBases Recalibrate Bases, default=FALSE. IF TRUE, a golden snps.vcf file should be provided.
 #' @param dbsnp.vcf The full path of dbsnp.vcf.
+#'
+#' @param shbase Base for the shell id, i.e. "slurm-script/run_gatk_". [chr]
+#' @param jobid Job ID, default="runarray". [chr]
 #' @param email Your email address that farm will email to once the jobs were done/failed.
 #' @param runinfo Parameters specify the array job partition information.
 #' A vector of c(FALSE, "bigmemh", "1"): 1) run or not, default=FALSE
@@ -44,70 +50,87 @@
 #' inputdf <- data.frame(fq1="fq_1.fq", fq2="f1_2.fq", out="mysample",
 #'                  group="g1", sample="s1", PL="illumina", LB="lib1", PU="unit1")
 #'
-#' run_GATK(inputdf,
+#' run_GATK(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE,rungatk=FALSE,
 #'          ref.fa="~/dbcenter/Ecoli/reference/Ecoli_k12_MG1655.fasta",
 #'          gatkpwd="$HOME/bin/GenomeAnalysisTK-3.5/GenomeAnalysisTK.jar",
 #'          picardpwd="$HOME/bin/picard-tools-2.1.1/picard.jar",
-#'          markDup=TRUE,
+#'          minscore=5,
 #'          realignInDels=FALSE, indels.vcf="indels.vcf",
 #'          recalBases=FALSE, dbsnp.vcf="dbsnp.vcf",
-#'          email=NULL, runinfo = c(FALSE, "bigmemh", 1))
+#'          shbase=NULL, jobid="runarray",
+#'          email=NULL, runinfo = c(FALSE, "bigmemh", 1, "10*10^6", "10:00:00"))
 #'
 #' @export
-run_GATK <- function(inputdf,
+run_GATK <- function(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE, rungatk=FALSE,
+
                      ref.fa="~/dbcenter/Ecoli/reference/Ecoli_k12_MG1655.fasta",
                      gatkpwd="$HOME/bin/GenomeAnalysisTK-3.5/GenomeAnalysisTK.jar",
                      picardpwd="$HOME/bin/picard-tools-2.1.1/picard.jar",
                      minscore=5,
-                     markDup=TRUE, addRG=FALSE,
                      realignInDels=FALSE, indels.vcf="indels.vcf",
                      recalBases=FALSE, dbsnp.vcf="dbsnp.vcf",
-                     rungatk=FALSE,
+
+                     shbase=NULL, jobid="runarray",
                      email=NULL, runinfo = c(FALSE, "bigmemh", 1, "10G", "10:00:00")){
 
   ##### prepare parameters:
   fq <- inputdf
   ### determine memory based on partition
-  run <- get_runinfo(runinfo)
+  #run <- get_runinfo(runinfo)
 
   #### create dir if not exist
   dir.create("slurm-script", showWarnings = FALSE)
   for(i in 1:nrow(fq)){
 
-    shid <- paste0("slurm-script/run_gatk_", i, ".sh")
+    if(is.null(shbase)){
+        shid <- paste0("slurm-script/run_gatk_", i, ".sh")
+    }else{
+        shid <- paste0(shbase, i, ".sh")
+    }
+
     ### header of the shell code
     cat("### GATK pipeline created by huskeR",
         paste("###", format(Sys.time(), "%a %b %d %X %Y")),
         paste(""),
         file=shid, sep="\n", append=FALSE)
 
-    if(sum(names(fq) %in% "bam") > 0){
-      inputbam <- fq$bam[i]
+    if(runbwa){
+        ### alignment and sorting using picard-tools
+        inputbam <- set_bwa(fq, runinfo, minscore, picardpwd, i, ref.fa, shid)
+    }else if(sum(names(fq) %in% "bam") > 0){
+        inputbam <- fq$bam[i]
     }else{
-      ### alignment and sorting using picard-tools
-      inputbam <- set_bwa(fq, run, minscore, picardpwd, i, ref.fa, shid)
+        stop("### no bam files, either set runbwa=TRUE, or add a `bam` column on inputdf.")
     }
 
     #### mark duplicates
-    if(markDup) inputbam <- set_markDup(fq, picardpwd, inputbam, i, run, shid)
+    if(markDup) inputbam <- set_markDup(fq, picardpwd, inputbam, i, runinfo, shid)
 
-    if(addRG) inputbam <- set_addRG(fq, picardpwd, inputbam, i, run, shid)
+    if(addRG) inputbam <- set_addRG(fq, picardpwd, inputbam, i, runinfo, shid)
 
     ### Perform local realignment around indels
-    if(realignInDels) inputbam <- set_realignInDels(fq, inputbam, i, indels.vcf, ref.fa, gatkpwd, run, shid)
+    if(realignInDels) inputbam <- set_realignInDels(fq, inputbam, i, indels.vcf, ref.fa, gatkpwd, runinfo, shid)
 
     ### Recalibrate Bases
-    if(recalBases) inputbam <- set_recalBases(fq, inputbam, i, indels.vcf, dbsnp.vcf, ref.fa, gatkpwd, run, shid)
+    if(recalBases) inputbam <- set_recalBases(fq, inputbam, i, indels.vcf, dbsnp.vcf, ref.fa, gatkpwd, runinfo, shid)
 
     ### Variant Discovery using HaplotypeCaller
-    if(rungatk) vcaller(fq, inputbam, i, ref.fa, gatkpwd, run, shid)
+    if(rungatk) vcaller(fq, inputbam, i, ref.fa, gatkpwd, runinfo, shid)
   }
 
-  shcode <- paste("module load java/1.8", "module load bwa/0.7.9a",
-                  "sh slurm-script/run_gatk_$SLURM_ARRAY_TASK_ID.sh", sep="\n")
-  set_array_job(shid="slurm-script/run_gatk_array.sh",
+  shcode <- paste0("module load java", "\n",
+                   "module load bwa", "\n",
+                   "sh ", shid)
+
+  if(is.null(shbase)){
+      ash <- paste0("slurm-script/run_gatk_array.sh")
+  }else{
+      ash <- paste0(shbase, "array.sh")
+  }
+
+  set_array_job(shid= ash,
                 shcode=shcode, arrayjobs=paste("1", nrow(inputdf), sep="-"),
-                wd=NULL, jobid="gatk", email=email, runinfo=runinfo)
+                wd=NULL, jobid=jobid, email=email, runinfo=runinfo)
   #  sbatch -p bigmemh --mem 32784 --ntasks=4  slurm-script/run_gatk_array.sh
 }
 
