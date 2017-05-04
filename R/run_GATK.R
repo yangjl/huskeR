@@ -118,10 +118,15 @@ run_GATK <- function(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE, rungatk=FA
     if(rungatk) vcaller(fq, inputbam, i, ref.fa, gatkpwd, runinfo, shid)
   }
 
+  if(is.null(shbase)){
+      shid2 <- paste0("slurm-script/run_gatk_$SLURM_ARRAY_TASK_ID.sh")
+  }else{
+      shid2 <- paste0(shbase, "$SLURM_ARRAY_TASK_ID.sh")
+  }
   shcode <- paste0("module load java", "\n",
                    "module load bwa", "\n",
                    "module load samtools", "\n",
-                   "sh ", shid)
+                   "sh ", shid2)
 
   if(is.null(shbase)){
       ash <- paste0("slurm-script/run_gatk_array.sh")
