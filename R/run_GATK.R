@@ -1,4 +1,4 @@
-#' \code{Run GATK job on farm}
+#' \code{Run GATK jobs on HPC}
 #'
 #' GATK Best Practices: recommended workflows for variant discovery analysis.
 #'
@@ -58,7 +58,7 @@
 #'          realignInDels=FALSE, indels.vcf="indels.vcf",
 #'          recalBases=FALSE, dbsnp.vcf="dbsnp.vcf",
 #'          shbase=NULL, jobid="runarray",
-#'          email=NULL, runinfo = c(FALSE, "bigmemh", 1, "10*10^6", "10:00:00"))
+#'          email=NULL, runinfo = c(FALSE, "bigmemh", 1, "10*10^3", "10:00:00"))
 #'
 #' @export
 run_GATK <- function(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE, rungatk=FALSE,
@@ -120,6 +120,7 @@ run_GATK <- function(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE, rungatk=FA
 
   shcode <- paste0("module load java", "\n",
                    "module load bwa", "\n",
+                   "module load samtools", "\n",
                    "sh ", shid)
 
   if(is.null(shbase)){
