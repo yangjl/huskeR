@@ -41,7 +41,7 @@
 #' @param email Your email address that farm will email to once the jobs were done/failed.
 #' @param runinfo Parameters specify the array job partition information.
 #' A vector of c(FALSE, "bigmemh", "1"): 1) run or not, default=FALSE
-#' 2) -p partition name, default=bigmemh and 3) --cpus, default=1.
+#' 2) -p partition name, default=bigmemh and 3) --cpus, default=1. 4) mem, default=1.5, in Gb.
 #' It will pass to \code{set_array_job}.
 #'
 #' @return return a batch of shell scripts.
@@ -58,7 +58,7 @@
 #'          realignInDels=FALSE, indels.vcf="indels.vcf",
 #'          recalBases=FALSE, dbsnp.vcf="dbsnp.vcf",
 #'          shbase=NULL, jobid="runarray",
-#'          email=NULL, runinfo = c(FALSE, "bigmemh", 1, "10*10^3", "10:00:00"))
+#'          email=NULL, runinfo = c(FALSE, "batch", 1, "1.5", "10:00:00"))
 #'
 #' @export
 run_GATK <- function(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE, rungatk=FALSE,
@@ -71,7 +71,7 @@ run_GATK <- function(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE, rungatk=FA
                      recalBases=FALSE, dbsnp.vcf="dbsnp.vcf",
 
                      shbase=NULL, jobid="runarray",
-                     email=NULL, runinfo = c(FALSE, "bigmemh", 1, "10G", "10:00:00")){
+                     email=NULL, runinfo = c(FALSE, "batch", 1, "1.5", "10:00:00")){
 
   ##### prepare parameters:
   fq <- inputdf
@@ -157,7 +157,7 @@ set_bwa <- function(fq, run, minscore, picardpwd, i, ref.fa, shid){
         paste(""),
 
         ### http://broadinstitute.github.io/picard/
-        paste0("java -Xmx", floor(as.numeric(run[4])/1024),
+        paste0("java -Xmx", floor(as.numeric(run[4])/1.024),
                "g -jar ", picardpwd, " SortSam \\"),
         paste0("    INPUT=", aligned_sam, " \\"),
         paste0("    OUTPUT=", sorted_bam, " \\"),
@@ -179,14 +179,14 @@ set_markDup <- function(fq, picardpwd, inputbam, i, run, shid){
   log <- paste0(fq$out[i], ".sorted.bam.log")
 
   cat("### Mark duplicates",
-      paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g ",
+      paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g ",
              "-jar ", picardpwd, " MarkDuplicates \\"),
       paste0("INPUT=", sorted_bam, " \\"),
       paste0("OUTPUT=", dedup_bam, " \\"),
       paste0("METRICS_FILE=", metrics),
       #paste(""),
       paste0(""),
-      paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g ",
+      paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g ",
              "-jar $HOME/bin/picard-tools-2.1.1/picard.jar BuildBamIndex \\"),
       paste0("INPUT=", dedup_bam),
       "",
@@ -206,7 +206,7 @@ set_addRG <- function(fq, picardpwd, inputbam, i, run, shid){
   #             "\\tPL:", fq$PL[i], "\\tLB:", fq$LB[i], "\\tPU:", fq$PU[i], "\'")
 
   cat("### add read groups",
-      paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g ",
+      paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g ",
              "-jar ", picardpwd, " AddOrReplaceReadGroups \\"),
       paste0("INPUT=", inputbam, " \\"),
       paste0("OUTPUT=", dedupRG_bam, " \\"),
@@ -236,7 +236,7 @@ set_realignInDels <- function(fq, inputbam, i, indels.vcf, ref.fa, gatkpwd, run,
   intervals <- paste0(fq$out[i], ".forIndelRealigner.intervals")
 
   cat("### Define intervals to target for local realignment",
-      paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g ", "-jar ", gatkpwd, " \\"),
+      paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g ", "-jar ", gatkpwd, " \\"),
       paste0("-T RealignerTargetCreator \\"),
       paste0("-R ", ref.fa, " \\"),
       paste0("-I ", inputbam, " \\"),
@@ -247,7 +247,7 @@ set_realignInDels <- function(fq, inputbam, i, indels.vcf, ref.fa, gatkpwd, run,
 
   cat("### Perform local realignment around indels",
       paste0("### link: https://www.broadinstitute.org/gatk/guide/article?id=2800"),
-      paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g -Djava.io.tmpdir=$HOME/tmp \\"),
+      paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g -Djava.io.tmpdir=$HOME/tmp \\"),
       paste0("-jar ", gatkpwd, " \\"),
       paste0("-I ", inputbam, " \\"),
       paste0("-R ", ref.fa, " \\"),
@@ -276,7 +276,7 @@ set_recalBases <- function(fq, inputbam, i, indels.vcf, dbsnp.vcf, ref.fa, gatkp
   #1. Analyze patterns of covariation in the sequence dataset
   cat("### Recalibrate base quality scores = run BQSR",
       "### link: https://www.broadinstitute.org/gatk/guide/article?id=2801",
-      paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g ", "-jar ", gatkpwd, " \\"),
+      paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g ", "-jar ", gatkpwd, " \\"),
       paste0("-T BaseRecalibrator \\"),
       paste0("-R ", ref.fa, "\\"),
       paste0("-I ", inputbam, " \\"),
@@ -287,7 +287,7 @@ set_recalBases <- function(fq, inputbam, i, indels.vcf, dbsnp.vcf, ref.fa, gatkp
       file=shid, sep="\n", append=TRUE)
 
   #2. Do a second pass to analyze covariation remaining after recalibration
-  cat(paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g ", "-jar ", gatkpwd, " \\"),
+  cat(paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g ", "-jar ", gatkpwd, " \\"),
       paste0("-T BaseRecalibrator \\"),
       paste0("-R ", ref.fa, " \\"),
       paste0("-I ", inputbam, " \\"),
@@ -299,7 +299,7 @@ set_recalBases <- function(fq, inputbam, i, indels.vcf, dbsnp.vcf, ref.fa, gatkp
       file=shid, sep="\n", append=TRUE)
 
   #3. Generate before/after plots
-  cat(paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g ", "-jar ", gatkpwd, " \\"),
+  cat(paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g ", "-jar ", gatkpwd, " \\"),
       paste0("-T AnalyzeCovariates \\"),
       paste0("-R ", ref.fa, " \\"),
       paste0("-before ", recal_table, " \\"),
@@ -309,7 +309,7 @@ set_recalBases <- function(fq, inputbam, i, indels.vcf, dbsnp.vcf, ref.fa, gatkp
       file=shid, sep="\n", append=TRUE)
 
   #4. Apply the recalibration to your sequence data
-  cat(paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g ", "-jar ", gatkpwd, " \\"),
+  cat(paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g ", "-jar ", gatkpwd, " \\"),
       paste0("-T PrintReads \\"),
       paste0("-R ", ref.fa, " \\"),
       paste0("-I ", inputbam, " \\"),
@@ -326,7 +326,7 @@ vcaller <- function(fq, inputbam, i, ref.fa, gatkpwd, run, shid){
   gvcf <- paste0(fq$out[i], ".g.vcf")
 
   cat("### Call variants in your sequence data",
-      paste0("java -Xmx", floor(as.numeric(run[4])/1024), "g ", "-jar ", gatkpwd, " \\"),
+      paste0("java -Xmx", floor(as.numeric(run[4])/1.024), "g ", "-jar ", gatkpwd, " \\"),
       paste0("-T HaplotypeCaller \\"),
       paste0("-R ", ref.fa, " \\"),
       paste0("-I ", inputbam, " \\"),

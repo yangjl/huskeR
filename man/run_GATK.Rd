@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_GATK.R
 \name{run_GATK}
 \alias{run_GATK}
-\title{\code{Run GATK job on farm}}
+\title{\code{Run GATK jobs on HPC}}
 \usage{
 run_GATK(inputdf, runbwa = TRUE, markDup = TRUE, addRG = FALSE,
   rungatk = FALSE,
@@ -11,7 +11,7 @@ run_GATK(inputdf, runbwa = TRUE, markDup = TRUE, addRG = FALSE,
   picardpwd = "$HOME/bin/picard-tools-2.1.1/picard.jar", minscore = 5,
   realignInDels = FALSE, indels.vcf = "indels.vcf", recalBases = FALSE,
   dbsnp.vcf = "dbsnp.vcf", shbase = NULL, jobid = "runarray",
-  email = NULL, runinfo = c(FALSE, "bigmemh", 1, "10G", "10:00:00"))
+  email = NULL, runinfo = c(FALSE, "batch", 1, "1.5", "10:00:00"))
 }
 \arguments{
 \item{inputdf}{An input data.frame for fastq files. Must contains fq1, fq2, out (and/or bam).
@@ -51,7 +51,7 @@ LB (library id), PU (unit, i.e. unit1). These strings (or info) will pass to BWA
 
 \item{runinfo}{Parameters specify the array job partition information.
 A vector of c(FALSE, "bigmemh", "1"): 1) run or not, default=FALSE
-2) -p partition name, default=bigmemh and 3) --cpus, default=1.
+2) -p partition name, default=bigmemh and 3) --cpus, default=1. 4) mem, default=1.5, in Gb.
 It will pass to \code{set_array_job}.}
 }
 \value{
@@ -87,7 +87,7 @@ run_GATK(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE,rungatk=FALSE,
          realignInDels=FALSE, indels.vcf="indels.vcf",
          recalBases=FALSE, dbsnp.vcf="dbsnp.vcf",
          shbase=NULL, jobid="runarray",
-         email=NULL, runinfo = c(FALSE, "bigmemh", 1, "10*10^6", "10:00:00"))
+         email=NULL, runinfo = c(FALSE, "batch", 1, "1.5", "10:00:00"))
 
 }
 
