@@ -37,7 +37,7 @@ return a batch of shell scripts.
 GenSel4R
 }
 \examples{
-traits <- tolower(c("ASI", "DTP", "DTS", "EHT", "GY", "PHT", "TW"))
+
 inputdf <- data.frame(pi=0.995,
    geno="/Users/yangjl/Documents/GWAS2_KRN/SNP/merged/geno_chr.newbin",
    trainpheno="/Users/yangjl/Documents/Heterosis_GWAS/pheno2011/reports/cd_GenSel_fullset.txt",
