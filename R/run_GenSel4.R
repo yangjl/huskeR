@@ -16,7 +16,7 @@
 #'           [chr, default is NULL]
 #' @param runinfo Parameters specify the array job partition information.
 #'           A vector of c(FALSE, "batch", "30G", 1, "8:00:00"): 1) run or not, default=FALSE
-#'           2) -p partition name, default=batch, 3) --mem=30G, 4) --ntasks=3, and 5) --time=8:00:00.
+#'           2) -p partition name, default=batch, 3) --ntasks=3, 4) --mem=30G, and 5) --time=8:00:00.
 #'
 #' @return return a batch of shell scripts.
 #'
@@ -31,14 +31,14 @@
 #'
 #' run_GenSel4(inputdf, cv=FALSE, inpdir="slurm-script/", cmdno=1,
 #'             shid = "slurm-script/run_gensel_array.sh", remove=TRUE,
-#'             email=NULL, runinfo = c(FALSE, "batch", "30G", 1, 8:00:00) )
+#'             email=NULL, runinfo = c(FALSE, "batch", 3, "30", "8:00:00") )
 #'
 #' @export
 run_GenSel4 <- function(
   inputdf, cv=FALSE, inpdir="largedata/", cmdno=1,
   shid = "slurm-script/run_gensel_array.sh",
   remove=TRUE,
-  email=NULL, runinfo = c(FALSE, "batch", "30G", 3, 8:00:00)
+  email=NULL, runinfo = c(FALSE, "batch", "30", 3, "8:00:00")
 ){
 
   #### create dir if not exist
@@ -68,11 +68,42 @@ run_GenSel4 <- function(
   }
 
   ### setup shell id
-  set_GS(inputdf, cmdno, inpdir)
+  set_GS(inputdf, cmdno, inpdir, remove)
 
-  shcode <- paste0("sh ", inpdir, "/run_gensel_$SLURM_ARRAY_TASK_ID.sh")
+  sh0 <- "module load compiler/gcc/6.1"
+  shcode <- c(sh0, paste0("sh ", inpdir, "/run_gensel_$SLURM_ARRAY_TASK_ID.sh"))
   set_array_job(shid=shid, shcode=shcode, arrayjobs=paste("1", nrow(inputdf)/cmdno, sep="-"),
                 wd=NULL, jobid="gensel", email=email, runinfo=runinfo)
+}
+
+#####
+set_GS <- function(inputdf, cmdno, inpdir, remove){
+    ####
+    for(j in 1:(nrow(inputdf)/cmdno)){
+
+        srow <- cmdno*(j-1) + 1
+        erow <- cmdno*j
+        shid <- paste0(inpdir, "/run_gensel_", j, ".sh")
+
+
+        sh1 <- paste0("GenSel4R ", inpdir, "/", inputdf$out[srow:erow], ".inp > ",
+                      inpdir, "/", inputdf$out[srow:erow], ".log")
+        sh2 <- c(paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".mcmcSamples1"),
+                 paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".mrkRes1"),
+                 paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".inp"),
+                 #paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".out1"),
+                 paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".cgrRes1"))
+        if(remove){
+            cat(paste("### run GenSel", Sys.time(), sep=" "),
+                c(sh1, sh2),
+                file=shid, sep="\n", append=FALSE)
+        }else{
+            cat(paste("### run GenSel", Sys.time(), sep=" "),
+                sh1,
+                file=shid, sep="\n", append=FALSE)
+        }
+
+    }
 }
 
 ############################ GenSel for cross-validation
@@ -157,24 +188,4 @@ GS_cv_inp <- function(
   )
 }
 
-set_GS <- function(inputdf, cmdno, inpdir, remove){
-  ####
-  for(j in 1:(nrow(inputdf)/cmdno)){
 
-    srow <- cmdno*(j-1) + 1
-    erow <- cmdno*j
-    shid <- paste0(inpdir, "/run_gensel_", j, ".sh")
-
-    sh0 <- "module load compiler/gcc/6.1"
-    sh1 <- paste0("GenSel4R ", inpdir, "/", inputdf$out[srow:erow], ".inp > ",
-                     inpdir, "/", inputdf$out[srow:erow], ".log")
-    sh2 <- c(paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".mcmcSamples1"),
-             paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".mrkRes1"),
-             paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".inp"),
-             #paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".out1"),
-             paste0("rm ", inpdir, "/", inputdf$out[srow:erow], ".cgrRes1"))
-    cat(paste("### run GenSel", Sys.time(), sep=" "),
-        c(sh0, sh1, sh2),
-        file=shid, sep="\n", append=FALSE)
-  }
-}
