@@ -90,4 +90,3 @@ run_GATK(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE,rungatk=FALSE,
          email=NULL, runinfo = c(FALSE, "batch", 1, "1.5", "10:00:00"))
 
 }
-

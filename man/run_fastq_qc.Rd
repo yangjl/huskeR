@@ -42,4 +42,3 @@ df$out <- gsub("sra_.*", "qc", df$out)
 run_fastq_qc(df, email=NULL, runinfo = c(FALSE, "bigmemh", 1))
 
 }
-

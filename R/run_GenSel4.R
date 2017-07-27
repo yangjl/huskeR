@@ -8,6 +8,7 @@
 #' and other parameters. [data.frame, see exaples]
 #' @param cv Cross-validation experiment [TRUE/FALSE, default=FALSE].
 #'           If TRUE, inputdf must contain `trainpheno` and `testpheno`; if FALSE, only need `pheno`.
+#' @param bayesType Analysis types for Bayes Methods. [chr, default=BayesC; BayesA, BayesB, BayesC, BayesCPi, RBR]
 #' @param inpdir Dir for the GS .inp file. [chr, default="largedata/"].
 #' @param cmdno Number of commands per CPU, i.e. number of rows per inputdf. [num, default=1].
 #' @param remove Whether to remove the intermediate GS files or not. [TRUE/FALSE, default is TRUE].
@@ -35,7 +36,7 @@
 #'
 #' @export
 run_GenSel4 <- function(
-  inputdf, cv=FALSE, inpdir="largedata/", cmdno=1,
+  inputdf, cv=FALSE, bayesType="BayesC", inpdir="largedata/", cmdno=1,
   shid = "slurm-script/run_gensel_array.sh",
   remove=TRUE,
   email=NULL, runinfo = c(FALSE, "batch", "30", 3, "8:00:00")
@@ -51,14 +52,14 @@ run_GenSel4 <- function(
 
     if(cv){
       GS_cv_inp(
-        inp= inpid, pi=inputdf$pi[i], geno=inputdf$geno[i],
+        inp= inpid, bayesType=bayesType, pi=inputdf$pi[i], geno=inputdf$geno[i],
         trainpheno=inputdf$trainpheno[i], testpheno=inputdf$testpheno[i],
         chainLength=inputdf$chainLength[i], burnin=inputdf$burnin[i],
         varGenotypic=inputdf$varGenotypic[i], varResidual=inputdf$varResidual[i]
       )
     }else{
       GS_regular_inp(
-        inp= inpid, pi=inputdf$pi[i], geno=inputdf$geno[i],
+        inp= inpid, bayesType=bayesType, pi=inputdf$pi[i], geno=inputdf$geno[i],
         pheno=inputdf$trainpheno[i],
         chainLength=inputdf$chainLength[i], burnin=inputdf$burnin[i],
         varGenotypic=inputdf$varGenotypic[i], varResidual=inputdf$varResidual[i]
@@ -108,14 +109,14 @@ set_GS <- function(inputdf, cmdno, inpdir, remove){
 
 ############################ GenSel for cross-validation
 GS_regular_inp <- function(
-  inp, pi,geno, pheno,
+  inp, pi,geno, pheno, bayesType,
   chainLength, burnin, varGenotypic, varResidual
 ){
 
   cat(paste("// gensel input file written", Sys.time(), sep=" "),
 
       "analysisType Bayes",
-      "bayesType BayesC",
+      paste("bayesType", bayesType),
       paste("chainLength", chainLength, sep=" "),
       paste("burnin", burnin=burnin, sep=" "),
       paste("probFixed", pi, sep=" "),
@@ -147,14 +148,14 @@ GS_regular_inp <- function(
 }
 ############################ GenSel for cross-validation
 GS_cv_inp <- function(
-  inp, pi,geno, trainpheno,
+  inp, pi,geno, trainpheno, bayesType,
   testpheno, chainLength, burnin, varGenotypic, varResidual
 ){
 
   cat(paste("// gensel input file written", Sys.time(), sep=" "),
 
       "analysisType Bayes",
-      "bayesType BayesC",
+      paste("bayesType", bayesType),
       paste("chainLength", chainLength, sep=" "),
       paste("burnin", burnin=burnin, sep=" "),
       paste("probFixed", pi, sep=" "),

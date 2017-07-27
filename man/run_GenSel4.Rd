@@ -4,7 +4,8 @@
 \alias{run_GenSel4}
 \title{\code{Run GenSel on slurm-based HPC}}
 \usage{
-run_GenSel4(inputdf, cv = FALSE, inpdir = "largedata/", cmdno = 1,
+run_GenSel4(inputdf, cv = FALSE, bayesType = "BayesC",
+  inpdir = "largedata/", cmdno = 1,
   shid = "slurm-script/run_gensel_array.sh", remove = TRUE, email = NULL,
   runinfo = c(FALSE, "batch", "30", 3, "8:00:00"))
 }
@@ -14,6 +15,8 @@ and other parameters. [data.frame, see exaples]}
 
 \item{cv}{Cross-validation experiment [TRUE/FALSE, default=FALSE].
 If TRUE, inputdf must contain `trainpheno` and `testpheno`; if FALSE, only need `pheno`.}
+
+\item{bayesType}{Analysis types for Bayes Methods. [chr, default=BayesC; BayesA, BayesB, BayesC, BayesCPi, RBR]}
 
 \item{inpdir}{Dir for the GS .inp file. [chr, default="largedata/"].}
 
@@ -50,4 +53,3 @@ run_GenSel4(inputdf, cv=FALSE, inpdir="slurm-script/", cmdno=1,
             email=NULL, runinfo = c(FALSE, "batch", 3, "30", "8:00:00") )
 
 }
-
