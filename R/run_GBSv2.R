@@ -98,7 +98,7 @@ run_GenSel4 <- function(
 #' @rdname run_tassel
 GBSSeqToTag <- function(shfile, mem=50, fqdir, db, keyfile){
 
-  cat(paste("## Tassel5.2 GBSv2", Sys.time(), sep=" "),
+  cat(paste("## Step1: GBSSeqToTag, Tassel5.2 GBSv2", Sys.time(), sep=" "),
 
       paste0("run_pipeline.pl -Xmx", mem, "g -fork1 -GBSSeqToTagDBPlugin -e ApeKI \\"),
       paste("-i", fqdir, " \\"),
@@ -114,6 +114,30 @@ GBSSeqToTag <- function(shfile, mem=50, fqdir, db, keyfile){
 
       file=shfile, sep="\n", append=FALSE
   )
+}
+
+
+#' \code{extract tags from db for alignment to reference}
+#'
+#' @param shfile A shell script.
+#' @param tagexport Fastq.gz file to export tags. [chr, ""export/tagsForAlign_F1s.fa.gz"]
+#' @param mindepth The minimum count of reads for a tag to be output. [num, =1]
+#'
+#' @return return a shell script.
+#'
+#' @rdname run_tassel
+TagExportToFastq <- function(shfile, mem=50, db, tagexport, mindepth=1){
+
+    cat(paste("## Step2: TagExportToFastq, Tassel5.2 GBSv2", Sys.time(), sep=" "),
+
+        paste0("run_pipeline.pl -Xmx", mem, "g -fork1 -TagExportToFastqPlugin \\"),
+        paste("-db", db, " \\"),
+        paste("-o", tagexport, " \\"),
+        paste("-c", mindepth, " \\"),
+        "-endPlugin -runfork1",
+
+        file=shfile, sep="\n", append=FALSE
+    )
 }
 
 
