@@ -1,4 +1,4 @@
-#' \code{Run GATK jobs on HPC}
+#' \code{Run GATK array jobs on HPC}
 #'
 #' GATK Best Practices: recommended workflows for variant discovery analysis.
 #'
