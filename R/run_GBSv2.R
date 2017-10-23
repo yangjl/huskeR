@@ -42,18 +42,19 @@ run_GBSv2 <- function(outdir="largedata/gbs", shfile, fqdir, keyfile,
     #### create dir if not exist
     dir.create("slurm-script", showWarnings = FALSE)
 
-    dir.create(paste(outdir, "tagexport", sep="/"), showWarnings = FALSE)
-    dir.create(paste(outdir, "discovery", sep="/"), showWarnings = FALSE)
+    #dir.create(paste(outdir, "tagexport", sep="/"), showWarnings = FALSE)
+    #dir.create(paste(outdir, "discovery", sep="/"), showWarnings = FALSE)
     #dir.create(paste(outdir, "db", sep="/"), showWarnings = FALSE)
 
-    if(is.null(db)){
-        db = paste(outdir, "db", sep="/")
-        dir.create(db, showWarnings = FALSE)
-    }
+    #if(is.null(db)){
+    #    db = paste(outdir, "db", sep="/")
+    #    dir.create(db, showWarnings = FALSE)
+    #}
 
     # 1. load modules
     cat(paste("## [run_GBSv2]: Tassel5.2 GBSv2", Sys.time(), sep=" "),
         paste0("module load java/1.8 tassel/5.2 bowtie/2.2"),
+        "",
         file=shfile, sep="\n", append=FALSE)
 
     # 2. generate tags from fastq file
@@ -63,8 +64,8 @@ run_GBSv2 <- function(outdir="largedata/gbs", shfile, fqdir, keyfile,
         if(seq2tag){
             GBSSeqToTag(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme)
         }
+        tagexport = paste(outdir, "tagexport.fa.gz", sep="/")
         if(tag2fq){
-            tagexport = paste(outdir, "tagexport", sep="/")
             TagExportToFastq(shfile, mem, db, tagexport, mindepth=1)
         }
         if(bt2){
@@ -164,6 +165,7 @@ SAMToGBSdb <- function(shfile, mem, sam, db){
         paste("-aProp 0 \\"), #Minimum length of aligned base pair to store the SAM entry
         paste("-aLen 0 \\"), #Minimum proportion of sequence that must align to store the SAM entry
         "-endPlugin -runfork1",
+        "",
         file=shfile, sep="\n", append=TRUE)
 }
 
@@ -184,6 +186,7 @@ DiscoverySNP <- function(shfile, mem, db, ref, mnlcov=0.05, mnmaf=0.001, deleteo
         paste("-mnMAF", mnmaf, " \\"),
         paste("-deleteOldData", deleteolddata, " \\"),
         "-endPlugin -runfork1",
+        "",
         file=shfile, sep="\n", append=TRUE)
 }
 
@@ -201,6 +204,7 @@ SNPQuality <- function(shfile, mem, db, snpqc_file){
         paste("-statFile", snpqc_file, " \\"),
 
         "-endPlugin -runfork1",
+        "",
         file=shfile, sep="\n", append=TRUE)
 }
 
@@ -224,6 +228,7 @@ ProductionSNPCaller <- function(shfile, mem, db, enzyme, fqdir, keyfile, kmerlen
         paste("-o", h5, "\\"),
 
         "-endPlugin -runfork1",
+        "",
         file=shfile, sep="\n", append=TRUE)
 }
 
