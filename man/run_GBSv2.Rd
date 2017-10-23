@@ -12,9 +12,10 @@
 \title{\code{Run TASSEL GBSv2 on slurm-based HPC}}
 \usage{
 run_GBSv2(outdir = "largedata/gbs", shfile, fqdir, keyfile, bt2_idx, sam, ref,
-  snpqc_file, db = NULL, mem, cpu, kmerlen = 64, enzyme = "ApeKI",
-  mnlcov = 0.05, mnmaf = 0.01, deleteolddata = "true", seq2tag = TRUE,
-  tag2fq = TRUE, bt2 = TRUE, snpcall = TRUE)
+  snpqc_file, h5, db = NULL, mem, cpu, kmerlen = 64, enzyme = "ApeKI",
+  mnlcov = 0.05, mnmaf = 0.01, deleteolddata = "true",
+  production = FALSE, seq2tag = TRUE, tag2fq = TRUE, bt2 = TRUE,
+  snpcall = TRUE)
 
 GBSSeqToTag(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme)
 
@@ -29,7 +30,7 @@ DiscoverySNP(shfile, mem, db, ref, mnlcov = 0.05, mnmaf = 0.001,
 
 SNPQuality(shfile, mem, db, snpqc_file)
 
-ProductionSNPCaller(shfile, db, enzyme, fqdir, keyfile, kmerlen, h5)
+ProductionSNPCaller(shfile, mem, db, enzyme, fqdir, keyfile, kmerlen, h5)
 }
 \arguments{
 \item{shfile}{A shell script in "slurm-script/". [chr, "slurm-script/run_it.sh"]}
@@ -45,6 +46,8 @@ ProductionSNPCaller(shfile, db, enzyme, fqdir, keyfile, kmerlen, h5)
 \item{ref}{Fastq file of the ref. [chr, "/lustre/work/jyanglab/jyang21/dbcenter/AGP/AGPv4/AGPv4_bt2_index/AGPv4_bt2.fa"]}
 
 \item{snpqc_file}{SNP qc file. [chr, "largedata/gbs/outputStats.txt"]}
+
+\item{h5}{Output hdf5 format. [chr, "gbs/discovery/output.h5"]}
 
 \item{db}{Relative file name of the db. [chr, =NULL, or "data/gbs.db"]}
 
@@ -62,6 +65,8 @@ ProductionSNPCaller(shfile, db, enzyme, fqdir, keyfile, kmerlen, h5)
 
 \item{deleteolddata}{Delete Old Data. [chr, ="true"]}
 
+\item{production}{SNP production. [logical, =F]}
+
 \item{seq2tag}{Generated tags from fastq files. [logical, =T]}
 
 \item{tag2fq}{extract tags from db for alignment to reference. [logical, =T]}
@@ -73,25 +78,9 @@ ProductionSNPCaller(shfile, db, enzyme, fqdir, keyfile, kmerlen, h5)
 \item{tagexport}{Fastq.gz file to export tags. [chr, "tagexport/tagsForAlign.fa.gz"]}
 
 \item{mindepth}{The minimum count of reads for a tag to be output. [num, =1]}
-
-\item{h5}{Output hdf5 format. [chr, "gbs/discovery/output.h5"]}
 }
 \value{
 return a batch of shell scripts.
-
-return a shell script.
-
-return a shell script.
-
-return a shell script.
-
-return a shell script.
-
-return a shell script.
-
-return a shell script.
-
-return a shell script.
 }
 \description{
 a single slurm job.

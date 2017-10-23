@@ -21,10 +21,12 @@
 #' @param mnmaf Min MAF. [num, =0.001]
 #' @param deleteolddata Delete Old Data. [chr, ="true"]
 #'
+#' @param production SNP production. [logical, =F]
 #' @param seq2tag Generated tags from fastq files. [logical, =T]
 #' @param tag2fq extract tags from db for alignment to reference. [logical, =T]
 #' @param bt2 Run bt2 alignment. [logical, =T]
 #' @param snpcall Call SNP. [logical, =T]
+#'
 #'
 #' @return return a batch of shell scripts.
 #'
@@ -33,10 +35,10 @@
 #'
 #' @export
 run_GBSv2 <- function(outdir="largedata/gbs", shfile, fqdir, keyfile,
-                      bt2_idx, sam, ref, snpqc_file,
+                      bt2_idx, sam, ref, snpqc_file, h5,
                       db=NULL, mem, cpu, kmerlen=64, enzyme="ApeKI",
                       mnlcov=0.05, mnmaf=0.01, deleteolddata="true",
-                      seq2tag=TRUE, tag2fq=TRUE, bt2=TRUE, snpcall=TRUE){
+                      production=FALSE, seq2tag=TRUE, tag2fq=TRUE, bt2=TRUE, snpcall=TRUE){
     #### create dir if not exist
     dir.create("slurm-script", showWarnings = FALSE)
 
@@ -55,30 +57,31 @@ run_GBSv2 <- function(outdir="largedata/gbs", shfile, fqdir, keyfile,
         file=shfile, sep="\n", append=FALSE)
 
     # 2. generate tags from fastq file
-    if(seq2tag){
-        GBSSeqToTag(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme)
+    if(production){
+        ProductionSNPCaller(shfile, mem, db, enzyme, fqdir, keyfile, kmerlen, h5)
+    }else{
+        if(seq2tag){
+            GBSSeqToTag(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme)
+        }
+        if(tag2fq){
+            tagexport = paste(outdir, "tagexport", sep="/")
+            TagExportToFastq(shfile, mem, db, tagexport, mindepth=1)
+        }
+        if(bt2){
+            run_bowtie2(shfile, cpu, bt2_idx, tagexport, sam)
+            SAMToGBSdb(shfile, mem, sam, db)
+        }
+        if(snpcall){
+            DiscoverySNP(shfile, mem, db, ref, mnlcov=0.05, mnmaf=0.001, deleteolddata)
+            SNPQuality(shfile, mem, db, snpqc_file)
+        }
     }
-    if(tag2fq){
-        tagexport = paste(outdir, "tagexport", sep="/")
-        TagExportToFastq(shfile, mem, db, tagexport, mindepth=1)
-    }
-    if(bt2){
-        run_bowtie2(shfile, cpu, bt2_idx, tagexport, sam)
-        SAMToGBSdb(shfile, mem, sam, db)
-    }
-    if(snpcall){
-        DiscoverySNP(shfile, mem, db, ref, mnlcov=0.05, mnmaf=0.001, deleteolddata)
-        SNPQuality(shfile, mem, db, snpqc_file)
-    }
-
 
 }
 
 
 #' \code{generate tags from fastq file}
 #'
-#'
-#' @return return a shell script.
 #'
 #' @rdname run_GBSv2
 GBSSeqToTag <- function(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme){
@@ -94,8 +97,10 @@ GBSSeqToTag <- function(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme){
       paste("-kmerLength", kmerlen, "\\"),
       "-minKmerL 20 \\",
       "-mnQS 20 \\",
+      "-mxKmerNum 100000000 \\",
       "-batchSize 8 \\",
       "-endPlugin -runfork1",
+      "",
 
       file=shfile, sep="\n", append=TRUE)
 }
@@ -106,7 +111,6 @@ GBSSeqToTag <- function(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme){
 #' @param tagexport Fastq.gz file to export tags. [chr, "tagexport/tagsForAlign.fa.gz"]
 #' @param mindepth The minimum count of reads for a tag to be output. [num, =1]
 #'
-#' @return return a shell script.
 #'
 #' @rdname run_GBSv2
 TagExportToFastq <- function(shfile, mem, db, tagexport, mindepth=1){
@@ -118,6 +122,7 @@ TagExportToFastq <- function(shfile, mem, db, tagexport, mindepth=1){
         paste("-o", tagexport, " \\"),
         paste("-c", mindepth, " \\"),
         "-endPlugin -runfork1",
+        "",
 
         file=shfile, sep="\n", append=TRUE)
 }
@@ -128,7 +133,6 @@ TagExportToFastq <- function(shfile, mem, db, tagexport, mindepth=1){
 #' bowtie2-build Zea_mays.AGPv4.dna.toplevel.fa AGPv4_bt2_index --threads 50
 #'
 #'
-#' @return return a shell script.
 #'
 #' @rdname run_GBSv2
 run_bowtie2 <- function(shfile, cpu, bt2_idx, tagexport, sam){
@@ -139,14 +143,14 @@ run_bowtie2 <- function(shfile, cpu, bt2_idx, tagexport, sam){
         "--very-sensitive-local \\",
         paste("-x", bt2_idx, " \\"),
         paste("-U", tagexport, " \\"),
-        paste("-S", sam, " \\"),
+        paste("-S", sam),
+        "",
         file=shfile, sep="\n", append=TRUE)
 }
 
 
 #' \code{store tag physical map position in database}
 #'
-#' @return return a shell script.
 #'
 #' @rdname run_GBSv2
 SAMToGBSdb <- function(shfile, mem, sam, db){
@@ -157,8 +161,8 @@ SAMToGBSdb <- function(shfile, mem, sam, db){
         paste("-i", sam, " \\"),
         paste("-db", db, " \\"),
 
-        paste("-aProp 0 \\"),
-        paste("-aLen 0 \\"),
+        paste("-aProp 0 \\"), #Minimum length of aligned base pair to store the SAM entry
+        paste("-aLen 0 \\"), #Minimum proportion of sequence that must align to store the SAM entry
         "-endPlugin -runfork1",
         file=shfile, sep="\n", append=TRUE)
 }
@@ -166,8 +170,6 @@ SAMToGBSdb <- function(shfile, mem, sam, db){
 
 #' \code{run SNP discovery plugin}
 #'
-#'
-#' @return return a shell script.
 #'
 #' @rdname run_GBSv2
 DiscoverySNP <- function(shfile, mem, db, ref, mnlcov=0.05, mnmaf=0.001, deleteolddata ){
@@ -189,8 +191,6 @@ DiscoverySNP <- function(shfile, mem, db, ref, mnlcov=0.05, mnmaf=0.001, deleteo
 #' \code{check SNP quality parameters}
 #'
 #'
-#' @return return a shell script.
-#'
 #' @rdname run_GBSv2
 SNPQuality <- function(shfile, mem, db, snpqc_file){
 
@@ -209,10 +209,9 @@ SNPQuality <- function(shfile, mem, db, snpqc_file){
 #' \code{run production pipeline}
 #'
 #' @param h5 Output hdf5 format. [chr, "gbs/discovery/output.h5"]
-#' @return return a shell script.
 #'
 #' @rdname run_GBSv2
-ProductionSNPCaller <- function(shfile, db, enzyme, fqdir, keyfile, kmerlen, h5){
+ProductionSNPCaller <- function(shfile, mem, db, enzyme, fqdir, keyfile, kmerlen, h5){
 
     cat(paste("## [run_GBSv2]: set ProductionSNPCallerPluginV2, Tassel5.2 GBSv2"),
 
