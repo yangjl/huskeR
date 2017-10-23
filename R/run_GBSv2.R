@@ -7,11 +7,19 @@
 #' @param shfile A shell script in "slurm-script/". [chr, "slurm-script/run_it.sh"]
 #' @param fqdir Absolute dir for the fastq files, can be nested within the dir. [chr, "my/fq/filedir"]
 #' @param keyfile The key file. The GBSv2 key file has 4 required headers: Flowcell, Lane, Barcode and FullSampleName. [chr, "data/file.txt]
+#' @param bt2_idx The idx file for bowtie2. [chr, "/lustre/work/jyanglab/jyang21/dbcenter/AGP/AGPv4/AGPv4_bt2_index/AGPv4_bt2_index"]
+#' @param sam The output sam file. [chr, "tagexport/tagsForAlignFullvs_F1s.sam"]
+#' @param ref Fastq file of the ref. [chr, "/lustre/work/jyanglab/jyang21/dbcenter/AGP/AGPv4/AGPv4_bt2_index/AGPv4_bt2.fa"]
+#' @param snpqc_file SNP qc file. [chr, "largedata/gbs/outputStats.txt"]
 #'
 #' @param db Relative file name of the db. [chr, =NULL, or "data/gbs.db"]
 #' @param mem Memory usage. [num, 50]
+#' @param cpu Number of CPUs to use. [num, 50]
 #' @param kmerlen Kmer length [num, =64]
 #' @param enzyme Enzyme used for cutting. [chr, ="ApeKI"]
+#' @param mnlcov mnLCov. [num, =0.05]
+#' @param mnmaf Min MAF. [num, =0.001]
+#' @param deleteolddata Delete Old Data. [chr, ="true"]
 #'
 #' @param seq2tag Generated tags from fastq files. [logical, =T]
 #' @param tag2fq extract tags from db for alignment to reference. [logical, =T]
@@ -24,8 +32,10 @@
 #'
 #'
 #' @export
-run_GBSv2 <- function(outdir="largedata/gbs", shfile, fqdir, kefile,
-                      db=NULL, mem, kmerlen=64, enzyme="ApeKI",
+run_GBSv2 <- function(outdir="largedata/gbs", shfile, fqdir, keyfile,
+                      bt2_idx, sam, ref, snpqc_file,
+                      db=NULL, mem, cpu, kmerlen=64, enzyme="ApeKI",
+                      mnlcov=0.05, mnmaf=0.01, deleteolddata="true",
                       seq2tag=TRUE, tag2fq=TRUE, bt2=TRUE, snpcall=TRUE){
     #### create dir if not exist
     dir.create("slurm-script", showWarnings = FALSE)
@@ -46,18 +56,19 @@ run_GBSv2 <- function(outdir="largedata/gbs", shfile, fqdir, kefile,
 
     # 2. generate tags from fastq file
     if(seq2tag){
-        GBSSeqToTag(shfile, mem, fqdir, db, keyfile, enzyme)
+        GBSSeqToTag(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme)
     }
     if(tag2fq){
+        tagexport = paste(outdir, "tagexport", sep="/")
         TagExportToFastq(shfile, mem, db, tagexport, mindepth=1)
     }
     if(bt2){
         run_bowtie2(shfile, cpu, bt2_idx, tagexport, sam)
-        SAMToGBSdb(shfile, sam, db)
+        SAMToGBSdb(shfile, mem, sam, db)
     }
     if(snpcall){
-        DiscoverySNP(shfile, db, ref, mnlcov=0.05, mnmaf=0.001 )
-        SNPQuality(shfile, db, snpqc_file)
+        DiscoverySNP(shfile, mem, db, ref, mnlcov=0.05, mnmaf=0.001, deleteolddata)
+        SNPQuality(shfile, mem, db, snpqc_file)
     }
 
 
@@ -80,14 +91,13 @@ GBSSeqToTag <- function(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme){
       paste("-k", keyfile, " \\"),
 
       "-c 10 \\",
-      paste("-kmerLength", kmerlen, "\\",
+      paste("-kmerLength", kmerlen, "\\"),
       "-minKmerL 20 \\",
       "-mnQS 20 \\",
       "-batchSize 8 \\",
       "-endPlugin -runfork1",
 
       file=shfile, sep="\n", append=TRUE)
-  )
 }
 
 
@@ -117,9 +127,6 @@ TagExportToFastq <- function(shfile, mem, db, tagexport, mindepth=1){
 #' pigz -k -d -p 50 Zea_mays.AGPv4.dna.toplevel.fa.gz
 #' bowtie2-build Zea_mays.AGPv4.dna.toplevel.fa AGPv4_bt2_index --threads 50
 #'
-#' @param cpu Number of CPUs to use. [num, 50]
-#' @param bt2_idx The idx file for bowtie2. [chr, "/lustre/work/jyanglab/jyang21/dbcenter/AGP/AGPv4/AGPv4_bt2_index/AGPv4_bt2_index"]
-#' @param sam The output sam file. [chr, "tagexport/tagsForAlignFullvs_F1s.sam"]
 #'
 #' @return return a shell script.
 #'
@@ -142,7 +149,7 @@ run_bowtie2 <- function(shfile, cpu, bt2_idx, tagexport, sam){
 #' @return return a shell script.
 #'
 #' @rdname run_GBSv2
-SAMToGBSdb <- function(shfile, sam, db){
+SAMToGBSdb <- function(shfile, mem, sam, db){
 
     cat(paste("## [run_GBSv2]: set SAMToGBSdb, Tassel5.2 GBSv2"),
 
@@ -159,15 +166,11 @@ SAMToGBSdb <- function(shfile, sam, db){
 
 #' \code{run SNP discovery plugin}
 #'
-#' @param ref Fastq file of the ref. [chr, "/lustre/work/jyanglab/jyang21/dbcenter/AGP/AGPv4/AGPv4_bt2_index/AGPv4_bt2.fa"]
-#' @param mnlcov mnLCov. [num, =0.05]
-#' @param mnmaf Min MAF. [num, =0.001]
-#' @param deleteolddata Delete Old Data. [chr, ="true"]
 #'
 #' @return return a shell script.
 #'
 #' @rdname run_GBSv2
-DiscoverySNP <- function(shfile, db, ref, mnlcov=0.05, mnmaf=0.001 ){
+DiscoverySNP <- function(shfile, mem, db, ref, mnlcov=0.05, mnmaf=0.001, deleteolddata ){
 
     cat(paste("## [run_GBSv2]: set DiscoverySNPCaller, Tassel5.2 GBSv2"),
 
@@ -185,15 +188,11 @@ DiscoverySNP <- function(shfile, db, ref, mnlcov=0.05, mnmaf=0.001 ){
 
 #' \code{check SNP quality parameters}
 #'
-#' @param snpqc_file SNP qc file. [chr, "largedata/gbs/outputStats.txt"]
-#' @param mnlcov mnLCov. [num, =0.05]
-#' @param mnmaf Min MAF. [num, =0.001]
-#' @param deleteolddata Delete Old Data. [chr, ="true"]
 #'
 #' @return return a shell script.
 #'
 #' @rdname run_GBSv2
-SNPQuality <- function(shfile, db, snpqc_file){
+SNPQuality <- function(shfile, mem, db, snpqc_file){
 
     cat(paste("## [run_GBSv2]: set SNPQualityProfilerPlugin, Tassel5.2 GBSv2"),
 
