@@ -201,7 +201,7 @@ SNPQuality <- function(shfile, mem, db, snpqc_file){
 
         paste0("run_pipeline.pl -Xmx", mem, "g -fork1 -SNPQualityProfilerPlugin \\"),
         paste("-db", db, " \\"),
-        paste("-statFile", snpqc_file, " \\"),
+        paste0("-statFile \'", snpqc_file, "\' \\"),
 
         "-endPlugin -runfork1",
         "",
