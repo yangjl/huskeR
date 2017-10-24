@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_GATK.R
 \name{run_GATK}
 \alias{run_GATK}
-\title{\code{Run GATK jobs on HPC}}
+\title{\code{Run GATK array jobs on HPC}}
 \usage{
 run_GATK(inputdf, runbwa = TRUE, markDup = TRUE, addRG = FALSE,
   rungatk = FALSE,
