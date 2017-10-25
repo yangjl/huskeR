@@ -66,7 +66,7 @@ set_array_job <- function(
     #### the sbatch code
     runinfo <- get_runinfo(runinfo)
     runcode <- paste0("sbatch -p ", runinfo[2], " --ntasks=", runinfo[3],
-                      " --mem ", runinfo[4], "G --time=", runinfo[5],
+                      " --mem ", runinfo[4], " --time=", runinfo[5],
                       " ", shid)
 
     #### attach some sh scripts

@@ -6,6 +6,7 @@
 #' \url{http://www.ncbi.nlm.nih.gov/books/NBK158899/#SRA_download.downloading_sra_data_using}
 #'
 #' @param inputdf sra files in df as input. no need path info. [df, df["sra"]]
+#' @param runnum Number of running jobs in parallel. [int, =100]
 #' @param dumppath The absolute path of the SRA files to dump. [chr, "largedata/dump/"]
 #' @param slurmsh File name of the output shell command. [chr, ="slurm-script/run_dump_"]
 #' @param rmsra Remove the original SRA file after dumpping. [logical, =TRUE]
@@ -25,7 +26,7 @@
 #' run_fq_dump2(filepath="test", rmsra=TRUE, gzip=TRUE, email=NULL, run=c(TRUE, "bigmemh", "8196", "1"))
 #'
 #' @export
-run_fq_dump <- function(inputdf, dumppath, rmsra=FALSE, gzip=FALSE, email=NULL,
+run_fq_dump <- function(inputdf, runnum=100, dumppath, rmsra=FALSE, gzip=FALSE, email=NULL,
                         slurmsh="slurm-script/run_dump_", runinfo=c(FALSE, "bigmemh", 5, "5G", "16:00:00")){
 
   files <- inputdf$sra
@@ -51,6 +52,6 @@ run_fq_dump <- function(inputdf, dumppath, rmsra=FALSE, gzip=FALSE, email=NULL,
   shcode <- paste0("module load SRAtoolkit/2.8; sh ",
                    slurmsh, "$SLURM_ARRAY_TASK_ID.sh", sep="\n")
   set_array_job(shid=paste0(slurmsh, "array.sh"),
-                shcode=shcode, arrayjobs=paste("1", length(files), sep="-"),
+                shcode=shcode, arrayjobs=paste0("1-", length(files), "%", runnum),
                 wd=NULL, jobid="aspera", email=email, runinfo=runinfo)
 }

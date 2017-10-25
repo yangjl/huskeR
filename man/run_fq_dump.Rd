@@ -4,12 +4,14 @@
 \alias{run_fq_dump}
 \title{\code{Run fastq-dump.}}
 \usage{
-run_fq_dump(inputdf, dumppath, rmsra = FALSE, gzip = FALSE, email = NULL,
-  slurmsh = "slurm-script/run_dump_", runinfo = c(FALSE, "bigmemh", 5, "5G",
-  "16:00:00"))
+run_fq_dump(inputdf, runnum = 100, dumppath, rmsra = FALSE, gzip = FALSE,
+  email = NULL, slurmsh = "slurm-script/run_dump_", runinfo = c(FALSE,
+  "bigmemh", 5, "5G", "16:00:00"))
 }
 \arguments{
 \item{inputdf}{sra files in df as input. no need path info. [df, df["sra"]]}
+
+\item{runnum}{Number of running jobs in parallel. [int, =100]}
 
 \item{dumppath}{The absolute path of the SRA files to dump. [chr, "largedata/dump/"]}
 
