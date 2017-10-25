@@ -1,7 +1,7 @@
 Package: huskeR
 Type: Package
 Title: Genomic and Genetic analysis Pipeline on HPC
-Version: 0.1.1.9007
+Version: 0.1.1.9008
 Author: Jinliang Yang
 Description: Collection of genomic and genetic analysis pipelines running on
     HPC.
