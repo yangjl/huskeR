@@ -8,7 +8,7 @@
 run_aspera(sradf, maxspeed = "100m", outdir = ".", cmdno = 1,
   email = NULL, runinfo)
 
-set_aspera(sradf, srow, erow, j)
+set_aspera(sradf, srow, erow, j, maxspeed, outdir)
 }
 \arguments{
 \item{sradf}{An input data.frame for SRA ids. Must contains column: SRR. [df["SRR"]]}
