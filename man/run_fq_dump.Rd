@@ -4,8 +4,8 @@
 \alias{run_fq_dump}
 \title{\code{Run fastq-dump.}}
 \usage{
-run_fq_dump(inputdf, rmsra = TRUE, gzip = TRUE, email = NULL,
-  run = c(TRUE, "bigmemh", "8196", "1"))
+run_fq_dump(inputdf, rmsra = FALSE, gzip = TRUE, email = NULL,
+  runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00"))
 }
 \arguments{
 \item{inputdf}{sra files in df as input. no need path info. [df, df["sra"]]}
@@ -16,12 +16,12 @@ run_fq_dump(inputdf, rmsra = TRUE, gzip = TRUE, email = NULL,
 
 \item{email}{Your email address that farm will email to once the job was done/failed. [chr, "y@gmail.com"]}
 
+\item{runinfo}{Parameters control the array job partition.
+A vector of c(TRUE, "bigmemh", "8196", "1"): 1) run or not, 2) -p partition name, 3) --mem, adn 4) --ntasks.}
+
 \item{dumppath}{The absolute path of the SRA files to dump. [chr, "largedata/dump/"]}
 
 \item{slurmsh}{File name of the output shell command. [chr, "slurm-script/dump.sh"]}
-
-\item{runinfo}{Parameters control the array job partition.
-A vector of c(TRUE, "bigmemh", "8196", "1"): 1) run or not, 2) -p partition name, 3) --mem, adn 4) --ntasks.}
 }
 \value{
 return a single shell script to run.

@@ -1,0 +1,25 @@
+---
+title: "Test functions"
+output: html_notebook
+---
+
+```{r setup, include=TRUE, warning=FALSE}
+knitr::opts_knit$set(root.dir=normalizePath('../'))
+knitr::opts_knit$set(warnings = TRUE, include=TRUE, echo=TRUE)
+library("huskeR")
+```
+
+### Test run_aspera
+
+```{r, eval=FALSE}
+
+#?run_aspera
+
+inputdf <- data.frame(SRR=paste0("SRR", 1:11), sid=1:11)
+
+run_aspera(sradf=inputdf, maxspeed = "100m", outdir = ".", cmdno = 5,
+  email = NULL, runinfo=c(FALSE, "bigmemh", 5, "5G", "16:00:00") )
+
+```
+
+

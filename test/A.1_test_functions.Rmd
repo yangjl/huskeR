@@ -1,0 +1,61 @@
+---
+title: "Test functions"
+output: html_notebook
+---
+
+```{r setup, include=TRUE, warning=FALSE}
+knitr::opts_knit$set(root.dir=normalizePath('../'))
+knitr::opts_knit$set(warnings = TRUE, include=TRUE, echo=TRUE)
+library("huskeR")
+```
+
+### Test run_GATK
+
+```{r, eval=FALSE}
+
+#?run_GATK
+
+inputdf <- data.frame(fq1="fq_1.fq", fq2="f1_2.fq", out="mysample",
+                 group="g1", sample="s1", PL="illumina", LB="lib1", PU="unit1")
+
+run_GATK(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE,rungatk=TRUE,
+         ref.fa="~/dbcenter/Ecoli/reference/Ecoli_k12_MG1655.fasta",
+         gatkpwd="$HOME/bin/GenomeAnalysisTK-3.5/GenomeAnalysisTK.jar",
+         picardpwd="$HOME/bin/picard-tools-2.1.1/picard.jar",
+         minscore=5,
+         realignInDels=FALSE, indels.vcf="indels.vcf",
+         recalBases=FALSE, dbsnp.vcf="dbsnp.vcf",
+         shbase="slurm-script/run_test_", jobid="runarray",
+         email=NULL, runinfo = c(FALSE, "batch", 1, 1.5, "10:00:00"))
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+
+
+### Test run_GBSv2
+
+```{r}
+library("huskeR")
+run_GBSv2(outdir = "largedata/gbs", shfile="slurm-script/gbs.sh", fqdir="fq.gz", keyfile="myket.txt", 
+          bt2_idx="mz.idx", sam="output.sam", ref="mz.ref.fa", snpqc_file="gbs/qc.txt",
+          db = "gbs.db", mem=50, cpu=50, kmerlen = 64, enzyme= "ApeKI", 
+          production=FALSE, seq2tag = TRUE, tag2fq = TRUE, bt2 = TRUE, snpcall = TRUE)
+
+set_slurm_job(slurmsh = "slurm-script/run_gbs.sh",
+  shcode = "sh slurm-script/gbs.sh", wd = NULL, jobid = "gbsjob",
+  email = "yangjl0930@gmail.com", runinfo = c(TRUE, "jclarke", "50", "100G", "8:00:00"))
+
+
+#####
+run_GBSv2(outdir = "largedata/gbs", shfile="slurm-script/gbs_prod.sh", fqdir="fq.gz", keyfile="myket.txt", 
+          bt2_idx="mz.idx", sam="output.sam", ref="mz.ref.fa", snpqc_file="gbs/qc.txt", h5="out.h5",
+          db = NULL, mem=50, cpu=50, kmerlen = 64, enzyme= "ApeKI", 
+          production=TRUE, seq2tag = TRUE, tag2fq = TRUE, bt2 = TRUE, snpcall = TRUE)
+
+set_slurm_job(slurmsh = "slurm-script/run_gbs.sh",
+  shcode = "sh slurm-script/gbs.sh", wd = NULL, jobid = "gbsjob",
+  email = "yangjl0930@gmail.com", runinfo = c(F, "jclarke", "50", "100G", "8:00:00"))
+
+```

@@ -2,6 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-test/*
 slurm-log/*
 slurm-script/*
