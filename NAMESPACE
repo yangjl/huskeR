@@ -2,6 +2,8 @@
 
 export(get_qc)
 export(get_runinfo)
+export(plot_stack)
+export(rescale)
 export(run_GATK)
 export(run_GBSv2)
 export(run_GenSel4)

@@ -6,8 +6,8 @@
 \usage{
 run_kallisto(df, single = TRUE, l = 200, s = 20,
   idx = "~/dbcenter/AGP/AGPv2/ZmB73_5a_WGS_exons.kallisto.idx",
-  email = NULL, jobid = "run_kquant", runinfo = c(TRUE, "bigmemh", "1",
-  "8:00:00"))
+  email = NULL, jobid = "run_kquant", runinfo = c(TRUE, "jclarke", "1",
+  "8G", "8:00:00"))
 }
 \arguments{
 \item{df}{Input files, [data.table, col: outdir, fq (SE) or fq1 and fq2 (PE)]}
@@ -17,6 +17,8 @@ run_kallisto(df, single = TRUE, l = 200, s = 20,
 \item{l}{Estimated average fragment length [number, default=200].}
 
 \item{s}{Estimated standard deviation of fragment length [number, default=20].}
+
+\item{idx}{Full path of Kallisto Index file, [chr, "/lustre/work/jyanglab/jyang21/dbcenter/AGP/AGPv4/Zea_mays.AGPv4.cdna.all.kallisto.idx"]}
 
 \item{run}{Parameters control the array job partition.
 A vector of c(TRUE, "bigmemh", "1", "8:00:00"): 1) run or not, 2) -p partition name, 3) --ntasks and 4) --times.}
@@ -34,7 +36,7 @@ see more detail about fastq-dump with Aspera downloading:
 \examples{
 ### build kallisto idex
  kallisto index -i ZmB73_5a_WGS_exons.kallisto.idx ZmB73_5a_WGS_exons.fasta.gz
- kallisto quant -i ~/dbcenter/AGP/AGPv2/ZmB73_5a_WGS_exons.kallisto.idx --plaintext -o . 
+ kallisto quant -i ~/dbcenter/AGP/AGPv2/ZmB73_5a_WGS_exons.kallisto.idx --plaintext -o .
 --single -l 200 -s 20 SRR957415.sra.fastq SRR957416.sra.fastq > test.txt
 
 }
