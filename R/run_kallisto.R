@@ -5,7 +5,7 @@
 #' see more detail about fastq-dump with Aspera downloading:
 #' \url{https://pachterlab.github.io/kallisto/manual}
 #'
-#' @param df Input files, [data.table, col: outdir, fq (SE) or fq1 and fq2 (PE)]
+#' @param df Input files, [data.frame, col: outdir, fq (SE) or fq1 and fq2 (PE)]
 #' @param idx Full path of Kallisto Index file, [chr, "/lustre/work/jyanglab/jyang21/dbcenter/AGP/AGPv4/Zea_mays.AGPv4.cdna.all.kallisto.idx"]
 #' @param single Single (or PE) end fastq [TRUE(FALSE)].
 #' @param l Estimated average fragment length [number, default=200].
