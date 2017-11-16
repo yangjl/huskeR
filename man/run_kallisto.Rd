@@ -10,7 +10,7 @@ run_kallisto(df, single = TRUE, l = 200, s = 20,
   "8G", "8:00:00"))
 }
 \arguments{
-\item{df}{Input files, [data.table, col: outdir, fq (SE) or fq1 and fq2 (PE)]}
+\item{df}{Input files, [data.frame, col: outdir, fq (SE) or fq1 and fq2 (PE)]}
 
 \item{single}{Single (or PE) end fastq [TRUE(FALSE)].}
 

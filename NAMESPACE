@@ -2,6 +2,7 @@
 
 export(get_qc)
 export(get_runinfo)
+export(plot_mht)
 export(plot_stack)
 export(rescale)
 export(run_GATK)
