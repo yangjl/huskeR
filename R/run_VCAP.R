@@ -16,7 +16,7 @@
 #'
 #'
 #' @export
-run_VCAP <- function(df,
+run_VCAP_res <- function(df,
                     email=NULL,
                     jobid="run_vcap", runinfo=c(TRUE, "jclarke", "1", "8G", "8:00:00")){
 
@@ -28,13 +28,13 @@ run_VCAP <- function(df,
 
         bedidx <- grep("bedfile", names(df))
 
-        cmd0 <- paste0("run_pipeline.pl -Xmx", runinfo[4], " -fork1 -importGuess", df$gz.lix[i])
+        cmd0 <- paste0("run_pipeline.pl -Xmx", runinfo[4], " -fork1 -importGuess ", df$gz.lix[i])
 
         fid <- 2 #fork id
         cmd1 <- c()
         for(j in bedidx){
             # -fork2 -FilterSiteBuilderPlugin -bedFile path/to/myBedFile1.bed -endPlugin -input1 -KinshipPlugin -method Centered_IBS -endPlugin
-            temp1 <- paste0("-fork", fid, " -FilterSiteBuilderPlugin -bedFile ", df[i, j],
+            temp11 <- paste0("-fork", fid, " -FilterSiteBuilderPlugin -bedFile ", df[i, j],
                        " -endPlugin -input1 -KinshipPlugin -method Centered_IBS -endPlugin")
             # -fork3 -FilterSiteBuilderPlugin -bedFile path/to/myBedFile2.bed -endPlugin -input1 -KinshipPlugin -method Centered_IBS -endPlugin
             cmd1 <- c(cmd1, temp1)
@@ -46,7 +46,7 @@ run_VCAP <- function(df,
         for(j in bedidx){
             # -fork4 -export myAptlyNamedCentered_IBS_kinship1 -exportType SqrMatrixBin -input2
             # -fork5 -export myAptlyNamedCentered_IBS_kinship2 -exportType SqrMatrixBin -input3
-            temp2 <- paste0("-fork", fid, " -export kinship_", df[i, j], " -exportType SqrMatrixBin -input", inputid)
+            temp2 <- paste0("-fork", fid, " -export ", df[i, j], ".kinship -exportType SqrMatrixBin -input", inputid)
             cmd2 <- c(cmd2, temp2)
             inputid <- inputid + 1
             fid <- fid + 1
