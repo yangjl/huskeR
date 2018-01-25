@@ -16,7 +16,7 @@
 #'
 #'
 #' @export
-run_VCAP_res <- function(df,
+run_VCAP <- function(df,
                     email=NULL,
                     jobid="run_vcap", runinfo=c(TRUE, "jclarke", "1", "8G", "8:00:00")){
 
