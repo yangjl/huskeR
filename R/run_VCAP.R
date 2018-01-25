@@ -34,7 +34,7 @@ run_VCAP <- function(df,
         cmd1 <- c()
         for(j in bedidx){
             # -fork2 -FilterSiteBuilderPlugin -bedFile path/to/myBedFile1.bed -endPlugin -input1 -KinshipPlugin -method Centered_IBS -endPlugin
-            temp11 <- paste0("-fork", fid, " -FilterSiteBuilderPlugin -bedFile ", df[i, j],
+            temp1 <- paste0("-fork", fid, " -FilterSiteBuilderPlugin -bedFile ", df[i, j],
                        " -endPlugin -input1 -KinshipPlugin -method Centered_IBS -endPlugin")
             # -fork3 -FilterSiteBuilderPlugin -bedFile path/to/myBedFile2.bed -endPlugin -input1 -KinshipPlugin -method Centered_IBS -endPlugin
             cmd1 <- c(cmd1, temp1)
