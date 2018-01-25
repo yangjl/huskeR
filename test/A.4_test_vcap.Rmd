@@ -1,0 +1,26 @@
+---
+title: "Test functions"
+output: html_notebook
+---
+
+```{r setup, include=TRUE, warning=FALSE}
+knitr::opts_knit$set(root.dir=normalizePath('../'))
+knitr::opts_knit$set(warnings = TRUE, include=TRUE, echo=TRUE)
+library("huskeR")
+```
+
+### Test run_aspera
+
+```{r, eval=FALSE}
+
+#?run_aspera
+
+inputdf <- data.frame(bedfile1="BedFile1", bedfile2="Bedfile2", bedfile3="bfile3",
+                      gz.lix="nam.gz.lix", genome_kinship="genome.kinship", res_kinship="res.kinship")
+inputdf
+
+run_VCAP(inputdf, email = NULL, runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00"))
+
+```
+
+
