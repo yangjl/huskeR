@@ -72,5 +72,35 @@ run_VCAP <- function(df,
                   wd=NULL, jobid=jobid, email=email, runinfo = runinfo)
 }
 
+#' \code{Set up aspera code in a job shell}
+#'
+#' @param df Start row of the df. [data.frame, cols:output, klist, pheno]
+#'
+#' @rdname run_VCAP
+set_ldak <- function(df,
+                     email=NULL,
+                     runinfo=c(TRUE, "jclarke", "1", "8G", "8:00:00")){
 
+    for(i in 1:nrow(df)){
+        ### setup the front line:
+        shid <- paste0("slurm-script/run_ldak_", i, ".sh")
+
+        # ldak5.linux --reml asb_test --mgrm klist.txt --pheno
+        # /lustre/work/jyanglab/jyang21/dbcenter/RareAlleles/genomeAnnos/VCAP/phenotypes/NAM/familyCorrected/NAM_phtavg_famCorrected.txt
+        # --kinship-details NO --constrain NO
+        cmd1 <- paste("## [huskeR: run_ldak]: set up ladk at ", Sys.time(), sep=" ")
+
+        cmd2 <- paste0("ldak5.linux --reml ", df$output[i], " --mgrm ", df$klist[i], " --pheno ", df$pheno[i],
+                      " --kinship-details NO --constrain NO")
+
+        cat(cmd1,
+            cmd2,
+            file=shid, sep="\n", append=FALSE)
+    }
+
+    set_array_job(shid="slurm-script/run_ldak_array.sh",
+                  shcode="sh slurm-script/run_ldak_$SLURM_ARRAY_TASK_ID.sh",
+                  arrayjobs=paste("1", nrow(df), sep="-"),
+                  wd=NULL, jobid="run_ldak", email=email, runinfo = runinfo)
+}
 

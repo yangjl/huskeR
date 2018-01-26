@@ -2,22 +2,30 @@
 % Please edit documentation in R/run_VCAP.R
 \name{run_VCAP}
 \alias{run_VCAP}
+\alias{set_ldak}
 \title{\code{Run VCAP array jobs on HPC}}
 \usage{
 run_VCAP(df, email = NULL, jobid = "run_vcap", runinfo = c(TRUE,
   "jclarke", "1", "8G", "8:00:00"))
+
+set_ldak(df, email = NULL, runinfo = c(TRUE, "jclarke", "1", "8G",
+  "8:00:00"))
 }
 \arguments{
 \item{df}{Input files. [data.frame, cols: "bedfile1", "bedfile2", ..., "bedfilen", gz.lix, genome_kinship and res_kinship]}
 
 \item{runinfo}{Parameters control the array job partition.
 A vector of c(TRUE, "bigmemh", "1", "8:00:00"): 1) run or not, 2) -p partition name, 3) --ntasks and 4) --times.}
+
+\item{df}{Start row of the df. [data.frame, cols:output, klist, pheno]}
 }
 \value{
 return a batch of shell scripts to run.
 }
 \description{
 kallisto quant
+
+\code{Set up aspera code in a job shell}
 }
 \details{
 see more detail about fastq-dump with Aspera downloading:
