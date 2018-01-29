@@ -29,7 +29,7 @@ plot_mht <- function(inputdf, col2plot="ModelFreq",
     plot(x=-1000, y=-1000,  type="p", xaxt="n", yaxt="n", xlab="",
          xlim=c(0, max(chrtick$chrlines)),
          ...)
-    axis(side=2, at=yaxis, labels=yaxis)
+    axis(side=2, at=NULL, labels=yaxis)
   }
   axis(side=1, at=chrtick$ticks, labels=c("chr1", "chr2", "chr3", "chr4", "chr5",
                                           "chr6", "chr7", "chr8", "chr9", "chr10"))
