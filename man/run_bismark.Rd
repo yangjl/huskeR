@@ -41,6 +41,7 @@ see more detail about Bismark:
 (I) Running bismark_genome_preparation
 module load bismark/0.19
 module load bowtie2/2.2
+module load samtools
 bismark_genome_preparation --bowtie2 /home/jolyang/dbcenter/AGP/AGPv2/
 
 (II) Running bismark

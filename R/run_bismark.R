@@ -13,6 +13,7 @@
 #' (I) Running bismark_genome_preparation
 #' module load bismark/0.19
 #' module load bowtie2/2.2
+#' module load samtools
 #' bismark_genome_preparation --bowtie2 /home/jolyang/dbcenter/AGP/AGPv2/
 #'
 #' (II) Running bismark
@@ -69,8 +70,8 @@ run_bismark <- function(inputdf,
         cmd1 <- paste("bismark --bowtie2 -N", N, mygenome, "-p", runinfo[3],
                       "-1", inputdf$fq1[i],  "-2", inputdf$fq2[i],
                       "--output_dir", outdir,  "--basename", inputdf$outbase[i])
-        cmd2 <- paste("bismark_methylation_extractor -p --bedGraph --counts --buffer_size 30%",
-                      "-o", outdir,
+        cmd2 <- paste("bismark_methylation_extractor --no_overlap -p --bedGraph --counts --buffer_size 30%",
+                      "-o", outdir, "--multicore", runinfo[3],
                       "--CX --cytosine_report --genome_folder", mygenome, bamfile)
 
         if(align){
@@ -83,6 +84,7 @@ run_bismark <- function(inputdf,
 
     shcode <- paste("module load bismark",
                     "module load bowtie/2.2",
+                    "module load samtools",
                     "sh slurm-script/run_bismark_$SLURM_ARRAY_TASK_ID.sh", sep="\n")
 
     set_array_job(shid="slurm-script/run_bismark_array.sh",
