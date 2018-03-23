@@ -39,8 +39,8 @@ see more detail about Bismark:
 \url{http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide.pdf}
 
 (I) Running bismark_genome_preparation
-module load bismark/0.14.3
-module load bowtie2/2.2.5
+module load bismark/0.19
+module load bowtie2/2.2
 bismark_genome_preparation --bowtie2 /home/jolyang/dbcenter/AGP/AGPv2/
 
 (II) Running bismark

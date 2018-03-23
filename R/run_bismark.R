@@ -11,8 +11,8 @@
 #' \url{http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide.pdf}
 #'
 #' (I) Running bismark_genome_preparation
-#' module load bismark/0.14.3
-#' module load bowtie2/2.2.5
+#' module load bismark/0.19
+#' module load bowtie2/2.2
 #' bismark_genome_preparation --bowtie2 /home/jolyang/dbcenter/AGP/AGPv2/
 #'
 #' (II) Running bismark
@@ -81,7 +81,7 @@ run_bismark <- function(inputdf,
         cat(cmd, file=shid, sep="\n", append=FALSE)
     }
 
-    shcode <- paste("module load bismark/0.14",
+    shcode <- paste("module load bismark",
                     "module load bowtie/2.2",
                     "sh slurm-script/run_bismark_$SLURM_ARRAY_TASK_ID.sh", sep="\n")
 
