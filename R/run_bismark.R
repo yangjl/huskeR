@@ -1,0 +1,92 @@
+#' \code{Run array Bismark job on farm}
+#'
+#' required modules to load:
+#' bowtie2/2.2.5
+#' bismark/0.14.3
+#'
+#' Allow one mismatch 'n 1'
+#'
+#'
+#' see more detail about Bismark:
+#' \url{http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide.pdf}
+#'
+#' (I) Running bismark_genome_preparation
+#' module load bismark/0.14.3
+#' module load bowtie2/2.2.5
+#' bismark_genome_preparation --bowtie2 /home/jolyang/dbcenter/AGP/AGPv2/
+#'
+#' (II) Running bismark
+#'
+#' #uses 0-based genomic start and 1-based end coordinates.
+#' bismark_methylation_extractor -s --bedGraph --counts --buffer_size 10G --CX
+#' --cytosine_report --genome_folder /home/jolyang/dbcenter/AGP/AGPv2 test_pe.bam
+#' #<chromosome> <position> <strand> <count methylated> <count unmethylated> <C-context> <trinucleotide context>
+#'
+#' @param inputdf An input data.frame object. Must contains fq1, fq2 and outbase, bam (optional). [df, ["fq1", "fq2", "outbase", ("bam", "genome")]]
+#' @param genome The folder of genome prepared by bismark.
+#'               If genome is NULL, then genome will read from inputdf column: 'genome'. [chr, ="/home/jolyang/dbcenter/AGP/AGPv2"]
+#' @param N Number of mismatches. Sets the number of mismatches to allowed in a seed alignment during multiseed alignment.
+#'          Can be set to 0 or 1. Setting this higher makes alignment slower (often much slower)
+#'          but increases sensitivity. Default: 0. This option is only available for Bowtie 2 (for Bowtie 1 see -n). [num, =1]
+#' @param align Whether to conduct alignment, default=TRUE. [logical, =TRUE]
+#' @param outdir Folder for output. [chr, ="/group/jrigrp4/BS_teo20/WGBS/BSM"]
+#' @param email Your email address that farm will email to once the job was done/failed.
+#'
+#' @return return a batch of shell scripts.
+#'
+#' @examples
+#' input_df <- data.frame(fq1=c("f_1.fq", "t_1.fq"), fq2=c("f_1.fq", "t_2.fq"), out=c("t1", "t2"))
+#' runa_bismark(input_df, genome="/home/jolyang/dbcenter/AGP/AGPv2",
+#' cpu=4, outdir="/group/jrigrp4/BS_teo20/WGBS/BSM", arrayjobs="1-5", jobid="bs1-5",
+#' email=NULL)
+#' @export
+run_bismark <- function(inputdf,
+                        genome="/home/jolyang/dbcenter/AGP/AGPv2",
+                        outdir="/group/jrigrp4/BS_teo20/WGBS/BSM",
+                        N=1,
+                        align=TRUE, email=NULL, runinfo = c(FALSE, "batch", 1, "10G", "8:00:00")){
+
+    # create dir if not exist
+    dir.create("slurm-script", showWarnings = FALSE)
+    ### determine memory based on partition
+    #runinfo <- get_runinfo(runinfo)
+
+    for(i in 1:nrow(inputdf)){
+        if(sum(names(inputdf) %in% "bam") ==1){
+            bamfile <- inputdf$bam[i]
+        }else{
+            bamfile <- paste0(outdir, "/", inputdf$outbase[i], "_pe.bam")
+        }
+
+        shid <- paste0("slurm-script/run_bismark_", i, ".sh")
+
+        if(is.null(genome)){
+            mygenome <- inputdf$genome[i]
+        }
+
+        ## ambiguous --np <int> Sets penalty for positions where the read, reference, or both,
+        ## contain an ambiguous character such as N. Default: 1.
+        cmd1 <- paste("bismark --bowtie2 -N", N, mygenome, "-p", runinfo[3],
+                      "-1", inputdf$fq1[i],  "-2", inputdf$fq2[i],
+                      "--output_dir", outdir,  "--basename", inputdf$outbase[i])
+        cmd2 <- paste("bismark_methylation_extractor -p --bedGraph --counts --buffer_size 30%",
+                      "-o", outdir,
+                      "--CX --cytosine_report --genome_folder", mygenome, bamfile)
+
+        if(align){
+            cmd <- c(cmd1, cmd2)
+        }else{
+            cmd <- cmd2
+        }
+        cat(cmd, file=shid, sep="\n", append=FALSE)
+    }
+
+    shcode <- paste("module load bismark/0.14",
+                    "module load bowtie/2.2",
+                    "sh slurm-script/run_bismark_$SLURM_ARRAY_TASK_ID.sh", sep="\n")
+
+    set_array_job(shid="slurm-script/run_bismark_array.sh",
+                  shcode=shcode, arrayjobs=paste("1", nrow(inputdf), sep="-"),
+                  wd=NULL, jobid="bismark", email=email, runinfo=runinfo)
+}
+
