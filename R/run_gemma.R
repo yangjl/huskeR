@@ -55,7 +55,7 @@ set_gemma <- function(inputdf, cmdno, workdir){
 
         shid <- paste0("slurm-script/run_gemma_", j, ".sh")
 
-        sh1 <- c("cd ", workdir)
+        sh1 <- paste0("cd ", workdir)
         sh2 <- paste0("gemma -bfile ", inputdf$bfile[srow:erow],
                       " -n ", inputdf$trait[srow:erow],
                       " -k ", inputdf$kin[srow:erow],
