@@ -30,7 +30,7 @@ run_gemma <- function(
 
   #### create dir if not exist
   dir.create("slurm-script", showWarnings = FALSE)
-  dir.create(inpdir, showWarnings = FALSE)
+  #dir.create(inpdir, showWarnings = FALSE)
 
   ### setup shell id
   set_gemma(inputdf, cmdno, workdir)
