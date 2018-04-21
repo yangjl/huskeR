@@ -2,7 +2,6 @@
 % Please edit documentation in R/plot_mht.R
 \name{plot_mht}
 \alias{plot_mht}
-\alias{plot_jmht}
 \alias{newpos}
 \alias{chrline_tick}
 \title{\code{manhattan plot}}
@@ -10,23 +9,20 @@
 plot_mht(inputdf, col2plot = "ModelFreq",
   cl_file = "~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv", cex = 0.9,
   pch = 16, col = rep(c("slateblue", "cyan4"), 5), GAP = 5e+06,
-  yaxis = NULL, ...)
-
-plot_jmht(inputdf, col2plot = "ModelFreq",
-  cl_file = "~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv", cex = 0.9,
-  pch = 16, col = rep(c("slateblue", "cyan4"), 5), GAP = 5e+06,
-  yaxis = NULL, ...)
+  yaxis = NULL, jmph = FALSE, ...)
 
 newpos(d, GAP, cl)
 
 chrline_tick(GAP, cl)
 }
 \arguments{
-\item{inputdf}{An input data.frame to plot. plot_mht: [df, =col2plot, "chr", "pos"]; plot_jmht: [,cex].}
+\item{inputdf}{An input data.frame to plot. plot_mht: [df, =col2plot, "chr", "pos"]}
 
 \item{col2plot}{The column name to plot. [chr, ="ModelFreq"]}
 
 \item{cl_file}{The full path of the chromosome length file. [chr, ="~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv"]}
+
+\item{jmph}{Plot joint mht. [log, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].}
 
 \item{CAP}{Cap between chrs. [num, =5e+06]}
 }
