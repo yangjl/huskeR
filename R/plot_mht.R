@@ -8,10 +8,10 @@
 #' @param jmph Plot joint mht. [log, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].
 #'
 #' @export
-plot_mht <- function(inputdf, col2plot="ModelFreq",
+plot_mht <- function(inputdf, col2plot="ModelFreq", jmph=FALSE,
                      cl_file = "~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv",
                      cex=.9, pch=16, col=rep(c("slateblue", "cyan4"), 5),
-                     GAP=5e+06, yaxis=NULL, jmph=FALSE,
+                     GAP=5e+06, yaxis=NULL,
                       ... ){
 
     res <- inputdf
