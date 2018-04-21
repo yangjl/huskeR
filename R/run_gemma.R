@@ -50,7 +50,7 @@ set_gemma <- function(inputdf, cmdno, workdir){
         srow <- cmdno*(j-1) + 1
         erow <- cmdno*j
         if(erow > nrow(inputdf)){
-            erwo <- nrow(inputdf)
+            erow <- nrow(inputdf)
         }
 
         shid <- paste0("slurm-script/run_gemma_", j, ".sh")
