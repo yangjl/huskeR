@@ -3,12 +3,14 @@
 #'
 #' @param inputdf An input data.frame to plot. plot_mht: [df, =col2plot, "chr", "pos"]
 #' @param col2plot The column name to plot. [chr, ="ModelFreq"]
+#' @param jmph Plot joint mht. [log, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].
+#' @param pl Plot lines instead of dots. [log, =FALSE]
 #' @param cl_file The full path of the chromosome length file. [chr, ="~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv"]
 #' @param CAP Cap between chrs. [num, =5e+06]
-#' @param jmph Plot joint mht. [log, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].
+
 #'
 #' @export
-plot_mht <- function(inputdf, col2plot="ModelFreq", jmph=FALSE,
+plot_mht <- function(inputdf, col2plot="ModelFreq", jmph=FALSE, pl=FALSE,
                      cl_file = "~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv",
                      cex=.9, pch=16, col=rep(c("slateblue", "cyan4"), 5),
                      GAP=5e+06, yaxis=NULL,
@@ -41,8 +43,15 @@ plot_mht <- function(inputdf, col2plot="ModelFreq", jmph=FALSE,
           points(x=subset(res, chr==i)$newpos, y=res[res$chr==i, col2plot],
                  pch = pch, col=col[i], cex=res[res$chr==i, ]$cw*cex);
       }else{
-          points(x=subset(res, chr==i)$newpos, y=res[res$chr==i, col2plot],
-                 pch = pch, col=col[i], cex=cex);
+          if(pl){
+              segments(x0=subset(res, chr==i)$newpos, y0=rep(0, nrow(res[res$chr==i,])),
+                        x1=subset(res, chr==i)$newpos, y1=res[res$chr==i, col2plot],
+                    col=col[i])
+          }else{
+              points(x=subset(res, chr==i)$newpos, y=res[res$chr==i, col2plot],
+                     pch = pch, col=col[i], cex=cex);
+          }
+
       }
 
   }
