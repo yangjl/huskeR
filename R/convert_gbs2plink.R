@@ -6,13 +6,14 @@
 #' @param gbsfile An input gbs in hmp format. Note without # lines. [chr, ="g2f_2014_zeagbsv27v5hmp_nodash.txt"]
 #' @param gbs If gbsfile is NULL load this gbs object. [obj, data.table=NULL]
 #' @param iupac Change the IUPAC Code. [logical, =TRUE]
+#' @param mode GBS code mode. mode=1, A, T, C, G; mode=2, AA, TT, CC, GG. [num, =1]
 #' @param outfile Output file name. [chr, ="~/dbcenter/seeds_data/chr10_filetered_unimputed.bed"]
 #' @param jmph
 #'
 #' plink --tped test.tped --tfam test.tfam --make-bed --missing-genotype N --allow-no-sex --make-founders --out ../Data/sim
 #' @export
 convert_gbs2plink <- function(gbsfile="g2f_2014_zeagbsv27v5hmp_nodash.txt",
-                              gbs=NULL, iupac=TRUE,
+                              gbs=NULL, iupac=TRUE, mode=1,
                     outfile="~/dbcenter/seeds_data/chr10_filetered_unimputed.bed"){
     ### GBS
     #library("data.table")
@@ -58,7 +59,12 @@ convert_gbs2plink <- function(gbsfile="g2f_2014_zeagbsv27v5hmp_nodash.txt",
     message(sprintf("[gbs2plink]: Start to transforming and recoding ..."))
     ### change to two identical haplotypes
     for(i in 5:ncol(tped)){
-        tped[, i] <- paste( gsub(".$", "", tped[,i] ),  gsub("^.", "", tped[,i] ))
+        if(mode == 1){
+            tped[, i] <- paste(tped[,i], tped[,i])
+        }
+        if(mode == 2){
+            tped[, i] <- paste( gsub(".$", "", tped[,i] ),  gsub("^.", "", tped[,i] ))
+        }
         #print(i)
     }
 
