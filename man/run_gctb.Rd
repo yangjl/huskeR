@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_gctb.R
 \name{run_gctb}
 \alias{run_gctb}
-\title{\code{Run GCTB program developed by Jian Zeng.}}
+\title{\code{Run GCTB in a wrapper developed by Jinliang Yang Lab at UNL.}}
 \usage{
 run_gctb(df, bayes, shid = "run_gtcb", email = NULL, runinfo = c(TRUE,
   "jclarke", "1", "8G", "8:00:00"))

@@ -1,4 +1,4 @@
-#' \code{Run GCTB program developed by Jian Zeng.}
+#' \code{Run GCTB in a wrapper developed by Jinliang Yang Lab at UNL.}
 #'
 #' you need to download and install GTCB before running this wrapper.
 #'
@@ -22,7 +22,7 @@
 #'
 #' @export
 run_gctb <- function(df, bayes, shid="run_gtcb",
-                         email=NULL, runinfo=c(TRUE, "jclarke", "1", "8G", "8:00:00")){
+                     email=NULL, runinfo=c(TRUE, "jclarke", "1", "8G", "8:00:00")){
 
     # create the slurm-script folder if it is not there.
   dir.create("slurm-script", showWarnings = FALSE)
@@ -33,7 +33,7 @@ run_gctb <- function(df, bayes, shid="run_gtcb",
   for(i in 1:nrow(df)){
 
     shid_i<- paste0("slurm-script/", shid, "_", i, ".sh")
-    dir.create(df$out[i], showWarnings = FALSE)
+    #dir.create(df$out[i], showWarnings = FALSE)
 
     if(bayes == "S"){
         cmd <- paste("gctb --bfile", df$bfile[i], "--pheno", df$pheno[i],
