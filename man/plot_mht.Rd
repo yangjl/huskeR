@@ -6,10 +6,10 @@
 \alias{chrline_tick}
 \title{\code{manhattan plot}}
 \usage{
-plot_mht(inputdf, col2plot = "ModelFreq",
+plot_mht(inputdf, col2plot = "ModelFreq", jmph = FALSE, pl = FALSE,
   cl_file = "~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv", cex = 0.9,
   pch = 16, col = rep(c("slateblue", "cyan4"), 5), GAP = 5e+06,
-  yaxis = NULL, jmph = FALSE, ...)
+  yaxis = NULL, ...)
 
 newpos(d, GAP, cl)
 
@@ -20,9 +20,11 @@ chrline_tick(GAP, cl)
 
 \item{col2plot}{The column name to plot. [chr, ="ModelFreq"]}
 
-\item{cl_file}{The full path of the chromosome length file. [chr, ="~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv"]}
-
 \item{jmph}{Plot joint mht. [log, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].}
+
+\item{pl}{Plot lines instead of dots. [log, =FALSE]}
+
+\item{cl_file}{The full path of the chromosome length file. [chr, ="~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv"]}
 
 \item{CAP}{Cap between chrs. [num, =5e+06]}
 }
