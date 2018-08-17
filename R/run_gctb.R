@@ -56,7 +56,7 @@ run_gctb <- function(df, bayes, shid="run_gtcb",
                    "--chain-length", df$chainlength[i],
                    "--burn-in", df$burnin[i],
                    "--out", df$out[i],
-                   ">", df$log)
+                   ">", df$log[i])
 
     }else{
         message(sprintf("[Warning!] stay tuned, [%s] have not been wrapped yet!", bayes))
