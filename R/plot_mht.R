@@ -7,7 +7,6 @@
 #' @param pl Plot lines instead of dots. [log, =FALSE]
 #' @param cl_file The full path of the chromosome length file. [chr, ="~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv"]
 #' @param CAP Cap between chrs. [num, =5e+06]
-
 #'
 #' @export
 plot_mht <- function(inputdf, col2plot="ModelFreq", jmph=FALSE, pl=FALSE,
@@ -93,3 +92,4 @@ chrline_tick <- function(GAP, cl){
   }
   return(cl)
 }
+
