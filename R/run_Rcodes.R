@@ -8,7 +8,7 @@
 #' @param rcodes The abosulte path of your R codes to run. [chr, ="lib/C_format.R"]
 #' @param arrayshid The sbatch id. [chr, ="slurm-script/run_bcf_query_array.sh"]
 #' @param email Your email address that farm will email to once the jobs were done/failed. [chr, =NULL]
-#' @param runinfo [vector, runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00", 1)]
+#' @param runinfo [vector, runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00")]
 #'
 #' @return return a batch of shell scripts.
 #'
