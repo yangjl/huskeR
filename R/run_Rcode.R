@@ -1,8 +1,10 @@
 #' \code{Run array job of R codes}
+#'
 #'  Run array rcodes according to the parameters in the inputdf file.
 #'  The array job number = nrow(inputdf).
 #'
 #' @param inputdf An input data.frame, with columns of file and out. [df, cols=file, out]
+#'                Note, row parameter "j" will be passed to each array job!
 #' @param outdir The dir of shell files. [chr, "largedata/"]
 #' @param cmdno Number of commands to excute in each array. [num, =1]
 #' @param rcodes The abosulte path of your R codes to run. [chr, ="lib/C_format.R"]
@@ -18,7 +20,7 @@
 #'            email=NULL, runinfo = c(FALSE, "bigmemh", 1))
 #'
 #' @export
-run_Rcodes <- function(
+run_Rcode <- function(
     inputdf, outdir, cmdno=1,
     rcodes = "lib/C_format.R",
     arrayshid = "slurm-script/run_bcf_query_array.sh",

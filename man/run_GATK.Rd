@@ -9,9 +9,10 @@ run_GATK(inputdf, runbwa = TRUE, markDup = TRUE, addRG = FALSE,
   ref.fa = "~/dbcenter/Ecoli/reference/Ecoli_k12_MG1655.fasta",
   gatkpwd = "$HOME/bin/GenomeAnalysisTK-3.5/GenomeAnalysisTK.jar",
   picardpwd = "$HOME/bin/picard-tools-2.1.1/picard.jar", minscore = 5,
-  realignInDels = FALSE, indels.vcf = "indels.vcf", recalBases = FALSE,
-  dbsnp.vcf = "dbsnp.vcf", shbase = NULL, jobid = "runarray",
-  email = NULL, runinfo = c(FALSE, "batch", 1, "1.5", "10:00:00"))
+  realignInDels = FALSE, indels.vcf = "indels.vcf",
+  recalBases = FALSE, dbsnp.vcf = "dbsnp.vcf", shbase = NULL,
+  jobid = "runarray", email = NULL, runinfo = c(FALSE, "batch", 1,
+  "1.5", "10:00:00"))
 }
 \arguments{
 \item{inputdf}{An input data.frame for fastq files. Must contains fq1, fq2, out (and/or bam).

@@ -34,8 +34,6 @@ return a batch of shell scripts.
 Downloading SRA using 'ascp' utility or Aspera Connect.
 How to download and install 'ascp':
 \url{http://downloads.asperasoft.com/en/downloads/8?list}
-
-\code{Set up aspera code in a job shell}
 }
 \details{
 see more detail about SRA with Aspera downloading:

@@ -11,11 +11,11 @@
 \alias{ProductionSNPCaller}
 \title{\code{Run TASSEL GBSv2 on slurm-based HPC}}
 \usage{
-run_GBSv2(outdir = "largedata/gbs", shfile, fqdir, keyfile, bt2_idx, sam, ref,
-  snpqc_file, h5, db = NULL, mem, cpu, kmerlen = 64, enzyme = "ApeKI",
-  mnlcov = 0.05, mnmaf = 0.01, deleteolddata = "true",
-  production = FALSE, seq2tag = TRUE, tag2fq = TRUE, bt2 = TRUE,
-  snpcall = TRUE)
+run_GBSv2(outdir = "largedata/gbs", shfile, fqdir, keyfile, bt2_idx, sam,
+  ref, snpqc_file, h5, db = NULL, mem, cpu, kmerlen = 64,
+  enzyme = "ApeKI", mnlcov = 0.05, mnmaf = 0.01,
+  deleteolddata = "true", production = FALSE, seq2tag = TRUE,
+  tag2fq = TRUE, bt2 = TRUE, snpcall = TRUE)
 
 GBSSeqToTag(shfile, mem, fqdir, db, keyfile, kmerlen, enzyme)
 
@@ -85,23 +85,6 @@ return a batch of shell scripts.
 \description{
 a single slurm job.
 help doc: https://bitbucket.org/tasseladmin/tassel-5-source/wiki/Tassel5GBSv2Pipeline
-
-\code{generate tags from fastq file}
-
-\code{extract tags from db for alignment to reference}
-
-\code{map tags to reference use bt2}
-#--very-sensitive-local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
-pigz -k -d -p 50 Zea_mays.AGPv4.dna.toplevel.fa.gz
-bowtie2-build Zea_mays.AGPv4.dna.toplevel.fa AGPv4_bt2_index --threads 50
-
-\code{store tag physical map position in database}
-
-\code{run SNP discovery plugin}
-
-\code{check SNP quality parameters}
-
-\code{run production pipeline}
 }
 \examples{
 

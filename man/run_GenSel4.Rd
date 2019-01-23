@@ -6,8 +6,8 @@
 \usage{
 run_GenSel4(inputdf, cv = FALSE, bayesType = "BayesC",
   inpdir = "largedata/", cmdno = 1,
-  shid = "slurm-script/run_gensel_array.sh", remove = TRUE, email = NULL,
-  runinfo = c(FALSE, "batch", "30", 3, "8:00:00"))
+  shid = "slurm-script/run_gensel_array.sh", remove = TRUE,
+  email = NULL, runinfo = c(FALSE, "batch", "30", 3, "8:00:00"))
 }
 \arguments{
 \item{inputdf}{An input data.frame for this function, including all the necessary pheno, geno file pathes,

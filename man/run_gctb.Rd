@@ -4,8 +4,8 @@
 \alias{run_gctb}
 \title{\code{Run GCTB in a wrapper developed by Jinliang Yang Lab at UNL.}}
 \usage{
-run_gctb(df, bayes, shid = "run_gtcb", email = NULL, runinfo = c(TRUE,
-  "jclarke", "1", "8G", "8:00:00"))
+run_gctb(df, bayes, shid = "run_gtcb", email = NULL,
+  runinfo = c(TRUE, "jclarke", "1", "8G", "8:00:00"))
 }
 \arguments{
 \item{df}{Input files with all the parameters for the Bayesian alphabet. [data.frame, col: bfile, ... (see examples for more details)]}

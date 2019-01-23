@@ -6,8 +6,8 @@
 \usage{
 run_kallisto(df, single = TRUE, l = 200, s = 20,
   idx = "~/dbcenter/AGP/AGPv2/ZmB73_5a_WGS_exons.kallisto.idx",
-  email = NULL, jobid = "run_kquant", runinfo = c(TRUE, "jclarke", "1",
-  "8G", "8:00:00"))
+  email = NULL, jobid = "run_kquant", runinfo = c(TRUE, "jclarke",
+  "1", "8G", "8:00:00"))
 }
 \arguments{
 \item{df}{Input files, [data.frame, col: outdir, fq (SE) or fq1 and fq2 (PE)]}

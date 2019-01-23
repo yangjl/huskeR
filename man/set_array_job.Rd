@@ -6,9 +6,9 @@
 \title{\code{Set up array job on farm}}
 \usage{
 set_array_job(shid = "largedata/GenSel/CL_test.sh",
-  shcode = "sh largedata/myscript.sh", arrayjobs = "1-700", wd = NULL,
-  jobid = "myjob", email = NULL, runinfo = c(TRUE, "bigmemh", "1", "10G",
-  "8:00:00"))
+  shcode = "sh largedata/myscript.sh", arrayjobs = "1-700",
+  wd = NULL, jobid = "myjob", email = NULL, runinfo = c(TRUE,
+  "bigmemh", "1", "10G", "8:00:00"))
 
 get_runinfo(runinfo)
 }
