@@ -7,8 +7,8 @@
  The array job number = nrow(inputdf).}
 \usage{
 run_Rcodes(inputdf, outdir, cmdno = 1, rcodes = "lib/C_format.R",
-  arrayshid = "slurm-script/run_bcf_query_array.sh", email = NULL,
-  runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00", 1))
+  rversion = "3.5", arrayshid = "slurm-script/run_bcf_query_array.sh",
+  email = NULL, runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00", 1))
 }
 \arguments{
 \item{inputdf}{An input data.frame, with columns of file and out. [df, cols=file, out]}
@@ -18,6 +18,8 @@ run_Rcodes(inputdf, outdir, cmdno = 1, rcodes = "lib/C_format.R",
 \item{cmdno}{Number of commands to excute in each array. [num, =1]}
 
 \item{rcodes}{The abosulte path of your R codes to run. [chr, ="lib/C_format.R"]}
+
+\item{rversion}{R version used. [chr, ="3.5"]}
 
 \item{arrayshid}{The sbatch id. [chr, ="slurm-script/run_bcf_query_array.sh"]}
 

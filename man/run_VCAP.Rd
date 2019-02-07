@@ -24,8 +24,6 @@ return a batch of shell scripts to run.
 }
 \description{
 kallisto quant
-
-\code{Set up aspera code in a job shell}
 }
 \details{
 see more detail about fastq-dump with Aspera downloading:

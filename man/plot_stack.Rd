@@ -4,9 +4,9 @@
 \alias{plot_stack}
 \title{\code{Stacking plot with 10 maize chromosomes}}
 \usage{
-plot_stack(df, df2, chrlen = "data/ZmB73_RefGen_v2.length", centcsv = NULL,
-  plotcol = "Dm", dorescale = FALSE, cols = list("red", rep(c("slateblue",
-  "cyan4"), 5), "#ff7373"), ...)
+plot_stack(df, df2, chrlen = "data/ZmB73_RefGen_v2.length",
+  centcsv = NULL, plotcol = "Dm", dorescale = FALSE,
+  cols = list("red", rep(c("slateblue", "cyan4"), 5), "#ff7373"), ...)
 }
 \arguments{
 \item{df}{An input data.frame, with columns of chr and pos.}

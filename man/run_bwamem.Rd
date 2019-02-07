@@ -4,8 +4,9 @@
 \alias{run_bwamem}
 \title{\code{Run BWA-mem job on farm}}
 \usage{
-run_bwamem(fq, kitpath = "/home/jolyang/bin/fermikit", s = "3g", t = 16,
-  l = 100, arrayjobs = "1-2", jobid = "fermi", email = NULL)
+run_bwamem(fq, kitpath = "/home/jolyang/bin/fermikit", s = "3g",
+  t = 16, l = 100, arrayjobs = "1-2", jobid = "fermi",
+  email = NULL)
 }
 \arguments{
 \item{fq}{An input data.frame for fastq files. Must contains fq1, fq2 and out.}
