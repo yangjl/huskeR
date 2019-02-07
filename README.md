@@ -24,6 +24,11 @@ Install [devtools](https://github.com/hadley/devtools) first, and then use `devt
 ```R
 #install.packages(devtools)
 devtools::install_github("yangjl/huskeR")
+
+# OR specify a path to install
+library(devtools)
+withr::with_libpaths(new = "/home/jyanglab/jyang21/R/x86_64-pc-linux-gnu-library/3.5", install_github('yangjl/huskeR'))
+
 library(huskeR)
 ```
 

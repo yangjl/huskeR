@@ -4,15 +4,9 @@
 \alias{run_Rcode}
 \title{\code{Run array job of R codes}}
 \usage{
-<<<<<<< HEAD:man/run_Rcodes.Rd
-run_Rcodes(inputdf, outdir, cmdno = 1, rcodes = "lib/C_format.R",
+run_Rcode(inputdf, outdir, cmdno = 1, rcodes = "lib/C_format.R",
   rversion = "3.5", arrayshid = "slurm-script/run_bcf_query_array.sh",
   email = NULL, runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00", 1))
-=======
-run_Rcode(inputdf, outdir, cmdno = 1, rcodes = "lib/C_format.R",
-  arrayshid = "slurm-script/run_bcf_query_array.sh", email = NULL,
-  runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00", 1))
->>>>>>> af17534c95afd801c372716a9844679ee958fd60:man/run_Rcode.Rd
 }
 \arguments{
 \item{inputdf}{An input data.frame, with columns of file and out. [df, cols=file, out]
@@ -40,7 +34,8 @@ Run array rcodes according to the parameters in the inputdf file.
  The array job number = nrow(inputdf).
 }
 \examples{
-run_Rcodes(inputdf=data.frame(file=1:11, out=10), outdir="slurm-script", cmdno=10,
+sh <- paste0('R --no-save --args ', j, ' < ', rcodes)
+run_Rcode(inputdf=data.frame(file=1:11, out=10), outdir="slurm-script", cmdno=10,
            rcodes = "lib/C_format.R", arrayshid = "slurm-script/run_rcode_array.sh",
            email=NULL, runinfo = c(FALSE, "bigmemh", 1))
 
