@@ -8,6 +8,7 @@
 #' @param outdir The dir of shell files. [chr, "largedata/"]
 #' @param cmdno Number of commands to excute in each array. [num, =1]
 #' @param rcodes The abosulte path of your R codes to run. [chr, ="lib/C_format.R"]
+#' @param rversion R version used. [chr, ="3.5"]
 #' @param arrayshid The sbatch id. [chr, ="slurm-script/run_bcf_query_array.sh"]
 #' @param email Your email address that farm will email to once the jobs were done/failed. [chr, =NULL]
 #' @param runinfo [vector, runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00")]
@@ -24,6 +25,7 @@
 run_Rcode <- function(
     inputdf, outdir, cmdno=1,
     rcodes = "lib/C_format.R",
+    rversion ="3.5",
     arrayshid = "slurm-script/run_bcf_query_array.sh",
     email=NULL, runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00", 1)
 ){
@@ -47,7 +49,7 @@ run_Rcode <- function(
             file=shid, sep="\n", append=FALSE)
     }
 
-    shcode <- paste0("module load R; sh ", outdir, "/run_rcode_$SLURM_ARRAY_TASK_ID.sh")
+    shcode <- paste0("module load R/", rversion, "; sh ", outdir, "/run_rcode_$SLURM_ARRAY_TASK_ID.sh")
     set_array_job(shid=arrayshid, shcode=shcode, arrayjobs=paste("1", tot, sep="-"),
                   wd=NULL, jobid="rcode", email=email, runinfo=runinfo)
 }
