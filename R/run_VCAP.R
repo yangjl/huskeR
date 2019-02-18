@@ -76,8 +76,8 @@ run_VCAP <- function(df,
 #'
 #' @param df Start row of the df. [data.frame, cols:output, klist, pheno]
 #'
-#' @rdname run_VCAP
-set_ldak <- function(df,
+#' @export
+run_ldak <- function(df,
                      email=NULL,
                      runinfo=c(TRUE, "jclarke", "1", "8G", "8:00:00")){
 
