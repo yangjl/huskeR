@@ -72,6 +72,7 @@ run_VCAP <- function(df,
                   wd=NULL, jobid=jobid, email=email, runinfo = runinfo)
 }
 
+
 #' \code{Set up aspera code in a job shell}
 #'
 #' @param df Start row of the df. [data.frame, cols:output, klist, pheno]
