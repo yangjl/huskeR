@@ -13,3 +13,6 @@ run_ldak(df, email = NULL, runinfo = c(TRUE, "jclarke", "1", "8G",
 \description{
 \code{Set up aspera code in a job shell}
 }
+\examples{
+
+}
