@@ -29,7 +29,7 @@ devtools::install_github("yangjl/huskeR")
 library(devtools)
 withr::with_libpaths(new = "/home/jyanglab/jyang21/R/x86_64-pc-linux-gnu-library/3.5", install_github('yangjl/huskeR'))
 
-library(huskeR)
+library(huskeR, lib.loc="/home/jyanglab/jyang21/R/x86_64-pc-linux-gnu-library/3.5")
 ```
 
 List all the functions in the package and find help.
