@@ -9,7 +9,7 @@
 #' @param cmdno Number of commands to excute in each array. [num, =1]
 #' @param rcodes The abosulte path of your R codes to run. [chr, ="lib/C_format.R"]
 #' @param rversion R version used. [chr, ="3.5"]
-#' @param arrayshid The sbatch id. [chr, ="slurm-script/run_bcf_query_array.sh"]
+#' @param base_shid The base of the sbatch id. [chr, ="slurm-script/run_bcf_query"]
 #' @param email Your email address that farm will email to once the jobs were done/failed. [chr, =NULL]
 #' @param runinfo [vector, runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00")]
 #'
@@ -18,7 +18,7 @@
 #' @examples
 #' sh <- paste0('R --no-save --args ', j, ' < ', rcodes)
 #' run_Rcode(inputdf=data.frame(file=1:11, out=10), outdir="slurm-script", cmdno=10,
-#'            rcodes = "lib/C_format.R", arrayshid = "slurm-script/run_rcode_array.sh",
+#'            rcodes = "lib/C_format.R", arrayshid = "run_rcode",
 #'            email=NULL, runinfo = c(FALSE, "bigmemh", 1))
 #'
 #' @export
@@ -26,7 +26,7 @@ run_Rcode <- function(
     inputdf, outdir, cmdno=1,
     rcodes = "lib/C_format.R",
     rversion ="3.5",
-    arrayshid = "slurm-script/run_bcf_query_array.sh",
+    base_shid = "run_bcf_query",
     email=NULL, runinfo = c(FALSE, "bigmemh", 5, "5G", "16:00:00", 1)
 ){
 
@@ -38,7 +38,7 @@ run_Rcode <- function(
     tot <- ceiling(nrow(inputdf)/cmdno)
     for(j in 1:tot){
 
-        shid <- paste0(outdir, "/run_rcode_", j, ".sh")
+        shid <- paste0(outdir, base_shid, "_", j, ".sh")
 
         ##chr:start-end
         #sh1 <- paste("cd", outdir)
@@ -50,7 +50,8 @@ run_Rcode <- function(
     }
 
     shcode <- paste0("module load R/", rversion, "; sh ", outdir, "/run_rcode_$SLURM_ARRAY_TASK_ID.sh")
+    arrayshid <- paste0(outdir, base_shid, "_array.sh")
     set_array_job(shid=arrayshid, shcode=shcode, arrayjobs=paste("1", tot, sep="-"),
-                  wd=NULL, jobid="rcode", email=email, runinfo=runinfo)
+                  wd=NULL, jobid=base_shid, email=email, runinfo=runinfo)
 }
 
