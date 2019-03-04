@@ -49,7 +49,7 @@ run_Rcode <- function(
             file=shid, sep="\n", append=FALSE)
     }
 
-    shcode <- paste0("module load R/", rversion, "; sh ", outdir, "/run_rcode_$SLURM_ARRAY_TASK_ID.sh")
+    shcode <- paste0("module load R/", rversion, "; sh ", outdir, "/", base_shid, "_$SLURM_ARRAY_TASK_ID.sh")
     arrayshid <- paste0(outdir, "/", base_shid, "_array.sh")
     set_array_job(shid=arrayshid, shcode=shcode, arrayjobs=paste("1", tot, sep="-"),
                   wd=NULL, jobid=base_shid, email=email, runinfo=runinfo)
