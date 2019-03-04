@@ -42,7 +42,14 @@ run_Rcode <- function(
 
         ##chr:start-end
         #sh1 <- paste("cd", outdir)
-        sh <- paste0('R --no-save --args ', j, ' < ', rcodes)
+        st <- (j-1)*cmdno + 1
+        ed <- j*cmdno
+
+        sh <- c()
+        for(ti in st:ed){
+            tem <- paste0('R --no-save --args ', ti, ' < ', rcodes)
+            sh <- c(sh, tem)
+        }
 
         cat(paste("### run Rcode", Sys.time(), sep=" "),
             sh,
@@ -54,4 +61,5 @@ run_Rcode <- function(
     set_array_job(shid=arrayshid, shcode=shcode, arrayjobs=paste("1", tot, sep="-"),
                   wd=NULL, jobid=base_shid, email=email, runinfo=runinfo)
 }
+
 
