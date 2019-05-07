@@ -1,15 +1,19 @@
 #' \code{manhattan plot}
 #'
 #'
-#' @param inputdf An input data.frame to plot. plot_mht: [df, =col2plot, "chr", "pos"]
+#' @param inputdf An input data.frame to plot.
+#'                If a cex weight column "cw" presents, dots will be bigger for larger value.
+#'                plot_mht: [df, =col2plot, "chr", "pos", "cw"(optional)]
+#' @param hdf A data.frame contains regions to be highlighted in the manhanttan plot. [df, =NULL, required columns: "chr", "pos"]
 #' @param col2plot The column name to plot. [chr, ="ModelFreq"]
-#' @param jmph Plot joint mht. [log, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].
-#' @param pl Plot lines instead of dots. [log, =FALSE]
+#' @param jmph Plot joint mht. [logical, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].
+#' @param pl Plot lines instead of dots. [logical, =FALSE]
 #' @param cl_file The full path of the chromosome length file. [chr, ="~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv"]
-#' @param CAP Cap between chrs. [num, =5e+06]
+#' @param GAP The physical gap value between chrs. [num, =5e+06]
+#' @param ... Pass parameters to plot.
 #'
 #' @export
-plot_mht <- function(inputdf, col2plot="ModelFreq", jmph=FALSE, pl=FALSE,
+plot_mht <- function(inputdf, hdf=NULL, col2plot="ModelFreq", jmph=FALSE, pl=FALSE,
                      cl_file = "~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv",
                      cex=.9, pch=16, col=rep(c("slateblue", "cyan4"), 5),
                      GAP=5e+06, yaxis=NULL,
@@ -47,17 +51,27 @@ plot_mht <- function(inputdf, col2plot="ModelFreq", jmph=FALSE, pl=FALSE,
                         x1=subset(res, chr==i)$newpos, y1=res[res$chr==i, col2plot],
                     col=col[i])
           }else{
+            if(sum(names(inputdf) %in% "cw") == 1){
+              points(x=subset(res, chr==i)$newpos, y=res[res$chr==i, col2plot],
+                     pch = pch, col=col[i], cex=res[res$chr==i, ]$cw*cex);
+            }else{
               points(x=subset(res, chr==i)$newpos, y=res[res$chr==i, col2plot],
                      pch = pch, col=col[i], cex=cex);
+            }
           }
-
       }
-
   }
+  ### add gene annotation information
+  if(!is.null(hdf)){
+    hdf <- newpos(d=hdf, GAP, cl)
+    abline(v=hdf$newpos, col="red", lty=2, lwd=0.6)
+  }
+
 }
 
 
 #' @rdname plot_mht
+#' @export
 newpos <- function (d, GAP, cl)
 {
   if (!("chr" %in% names(d) & "pos" %in% names(d))){
@@ -75,6 +89,7 @@ newpos <- function (d, GAP, cl)
 }
 
 #' @rdname plot_mht
+#' @export
 chrline_tick <- function(GAP, cl){
   #xscale:
 

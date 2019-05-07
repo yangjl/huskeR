@@ -6,27 +6,33 @@
 \alias{chrline_tick}
 \title{\code{manhattan plot}}
 \usage{
-plot_mht(inputdf, col2plot = "ModelFreq", jmph = FALSE, pl = FALSE,
-  cl_file = "~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv", cex = 0.9,
-  pch = 16, col = rep(c("slateblue", "cyan4"), 5), GAP = 5e+06,
-  yaxis = NULL, ...)
+plot_mht(inputdf, hdf = NULL, col2plot = "ModelFreq", jmph = FALSE,
+  pl = FALSE, cl_file = "~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv",
+  cex = 0.9, pch = 16, col = rep(c("slateblue", "cyan4"), 5),
+  GAP = 5e+06, yaxis = NULL, ...)
 
 newpos(d, GAP, cl)
 
 chrline_tick(GAP, cl)
 }
 \arguments{
-\item{inputdf}{An input data.frame to plot. plot_mht: [df, =col2plot, "chr", "pos"]}
+\item{inputdf}{An input data.frame to plot.
+If a cex weight column "cw" presents, dots will be bigger for larger value.
+plot_mht: [df, =col2plot, "chr", "pos", "cw"(optional)]}
+
+\item{hdf}{A data.frame contains regions to be highlighted in the manhanttan plot. [df, =NULL, required columns: "chr", "pos"]}
 
 \item{col2plot}{The column name to plot. [chr, ="ModelFreq"]}
 
-\item{jmph}{Plot joint mht. [log, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].}
+\item{jmph}{Plot joint mht. [logical, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].}
 
-\item{pl}{Plot lines instead of dots. [log, =FALSE]}
+\item{pl}{Plot lines instead of dots. [logical, =FALSE]}
 
 \item{cl_file}{The full path of the chromosome length file. [chr, ="~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv"]}
 
-\item{CAP}{Cap between chrs. [num, =5e+06]}
+\item{GAP}{The physical gap value between chrs. [num, =5e+06]}
+
+\item{...}{Pass parameters to plot.}
 }
 \description{
 \code{manhattan plot}
