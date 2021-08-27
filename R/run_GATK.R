@@ -106,6 +106,7 @@ run_GATK <- function(inputdf, runbwa=TRUE, markDup=TRUE, addRG=FALSE, rungatk=FA
     #### mark duplicates
     if(markDup) inputbam <- set_markDup(fq, picardpwd, inputbam, i, runinfo, shid)
 
+    #### Add read groups, sort
     if(addRG) inputbam <- set_addRG(fq, picardpwd, inputbam, i, runinfo, shid)
 
     ### Perform local realignment around indels
@@ -183,6 +184,7 @@ set_markDup <- function(fq, picardpwd, inputbam, i, run, shid){
              "-jar ", picardpwd, " MarkDuplicates \\"),
       paste0("INPUT=", sorted_bam, " \\"),
       paste0("OUTPUT=", dedup_bam, " \\"),
+      paste0("VALIDATION_STRINGENCY=SILENT \\"),
       paste0("METRICS_FILE=", metrics),
       #paste(""),
       paste0(""),
@@ -281,7 +283,7 @@ set_recalBases <- function(fq, inputbam, i, indels.vcf, dbsnp.vcf, ref.fa, gatkp
       paste0("-R ", ref.fa, "\\"),
       paste0("-I ", inputbam, " \\"),
       paste0("-knownSites ", dbsnp.vcf, " \\"),
-      paste0("-knownSites ", indels.vcf, " \\"),
+      #paste0("-knownSites ", indels.vcf, " \\"),
       paste0("-o ", recal_table),
       "",
       file=shid, sep="\n", append=TRUE)

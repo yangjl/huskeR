@@ -4,7 +4,9 @@
 #' @param inputdf An input data.frame to plot.
 #'                If a cex weight column "cw" presents, dots will be bigger for larger value.
 #'                plot_mht: [df, =col2plot, "chr", "pos", "cw"(optional)]
-#' @param hdf A data.frame contains regions to be highlighted in the manhanttan plot. [df, =NULL, required columns: "chr", "pos"]
+#' @param hdf A data.frame contains regions to be highlighted in the manhanttan plot.
+#' [df, =NULL, required columns: "chr", "pos"]
+#' #' @param hdf A data.frame contains ellipse positions. [df, =NULL, required columns: "chr", "pos"]
 #' @param col2plot The column name to plot. [chr, ="ModelFreq"]
 #' @param jmph Plot joint mht. [logical, =FALSE], if =TURE, must have cex weight column (cw) in inputdf: [,cw].
 #' @param pl Plot lines instead of dots. [logical, =FALSE]
@@ -13,10 +15,11 @@
 #' @param ... Pass parameters to plot.
 #'
 #' @export
-plot_mht <- function(inputdf, hdf=NULL, col2plot="ModelFreq", jmph=FALSE, pl=FALSE,
+plot_mht_ellipse <- function(inputdf, hdf=NULL, edf=NULL, col2plot="ModelFreq", jmph=FALSE, pl=FALSE,
                      cl_file = "~/bin/zmSNPtools/Rcodes/chr_length_B73v3.csv",
                      cex=.9, pch=16, col=rep(c("slateblue", "cyan4"), 5),
                      GAP=5e+06, yaxis=NULL,
+                     draw_ellipse=TRUE,
                       ... ){
 
     res <- inputdf
@@ -29,7 +32,7 @@ plot_mht <- function(inputdf, hdf=NULL, col2plot="ModelFreq", jmph=FALSE, pl=FAL
   #### setup the cavon
   if(is.null(yaxis)){
     plot(x=-1000, y=-1000,  type="p", xaxt="n", xlab="",
-         xlim=c(0, max(chrtick$chrlines)), ylim=c(0, max(res[, col2plot], na.rm=TRUE)*1.3 ),
+         xlim=c(0, max(chrtick$chrlines)), ylim=c(-5, max(res[, col2plot], na.rm=TRUE)*1.3 ),
          ...)
   }else{
     plot(x=-1000, y=-1000,  type="p", xaxt="n", yaxt="n", xlab="",
@@ -62,7 +65,14 @@ plot_mht <- function(inputdf, hdf=NULL, col2plot="ModelFreq", jmph=FALSE, pl=FAL
       }
   }
 
-  ### add gene annotation information
+  ### add ellipse curves with arrows
+  for(i in 1:nrow(edf)){
+      curvedarrow(from = c(edf$start[i],0), to = c(edf$end[i],0),
+                  curve = 5/(edf$end[i] - edf$start[i]), arr.adj = 1, arr.pos = 1,
+                  arr.type = "triangle", arr.col = "blue", lwd=2, arr.length = 0.2)
+  }
+
+  ### add gene annotation information (i.e. highlighted regions)
   if(!is.null(hdf)){
     hdf <- newpos(d=hdf, GAP, cl)
     abline(v=hdf$newpos, col="red", lty=2, lwd=0.6)
